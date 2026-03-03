@@ -1,0 +1,67 @@
+{
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [],
+    "ask": [],
+    "deny": [
+      "Bash(rm ~/)",
+      "Bash(rm /)",
+      "Bash(prisma db push)",
+      "Bash(npx prisma db push)",
+      "Bash(npm run db:push)",
+      "Bash(bun run db:push)",
+      "Bash(pnpm run db:push)",
+      "Bash(rm -rf /:*)",
+      "Bash(rm -rf ~:*)",
+      "Bash(sudo rm -rf :*::*)",
+      "Bash(dd if=/dev/zero of=/dev/sd*:*)",
+      "Bash(mkfs.:*::*)",
+      "Bash(fdisk:*)",
+      "Bash(parted:*)",
+      "Bash(chown -R /:*)",
+      "Bash(chmod -R 0 /:*)",
+      "Bash(shutdown:*)",
+      "Bash(reboot:*)",
+      "Bash(systemctl poweroff:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fdx:*)",
+      "Bash(git push --force:*)",
+      "Bash(docker system prune -af:*)",
+      "Bash(docker volume rm -f :*::*)",
+      "Bash(prisma migrate reset:*)"
+    ]
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/orchestrator-directives.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/loc-threshold-check.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay $CLAUDE_PROJECT_DIR/.claude/noti.mp3"
+          }
+        ]
+      }
+    ]
+  }
+}

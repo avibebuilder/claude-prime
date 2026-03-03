@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 370" width="1280" height="370">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e14"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <linearGradient id="accentLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#58a6ff" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#58a6ff" stop-opacity="0.3"/>
+      <stop offset="70%" stop-color="#e3b341" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#e3b341" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="370" fill="url(#bg)"/>
+
+  <!-- Circuit line art — left -->
+  <g stroke="#58a6ff" stroke-width="1" fill="none" opacity="0.15">
+    <path d="M0,100 L90,100 L110,120 L110,250 L90,270 L0,270"/>
+    <path d="M0,140 L55,140 L70,155 L70,225 L55,240 L0,240"/>
+    <circle cx="110" cy="120" r="3"/><circle cx="110" cy="250" r="3"/>
+    <circle cx="70" cy="155" r="2"/><circle cx="70" cy="225" r="2"/>
+  </g>
+  <g stroke="#e3b341" stroke-width="1" fill="none" opacity="0.12">
+    <path d="M0,60 L130,60 L150,80 L150,290 L130,310 L0,310"/>
+    <circle cx="150" cy="80" r="2" fill="#e3b341"/><circle cx="150" cy="290" r="2" fill="#e3b341"/>
+  </g>
+  <!-- Circuit line art — right -->
+  <g stroke="#58a6ff" stroke-width="1" fill="none" opacity="0.15">
+    <path d="M1280,100 L1190,100 L1170,120 L1170,250 L1190,270 L1280,270"/>
+    <path d="M1280,140 L1225,140 L1210,155 L1210,225 L1225,240 L1280,240"/>
+    <circle cx="1170" cy="120" r="3"/><circle cx="1170" cy="250" r="3"/>
+    <circle cx="1210" cy="155" r="2"/><circle cx="1210" cy="225" r="2"/>
+  </g>
+  <g stroke="#e3b341" stroke-width="1" fill="none" opacity="0.12">
+    <path d="M1280,60 L1150,60 L1130,80 L1130,290 L1150,310 L1280,310"/>
+    <circle cx="1130" cy="80" r="2" fill="#e3b341"/><circle cx="1130" cy="290" r="2" fill="#e3b341"/>
+  </g>
+
+  <!-- Terminal window -->
+  <g transform="translate(200, 16)">
+    <rect x="0" y="0" width="880" height="338" rx="10" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+
+    <!-- Title bar -->
+    <rect x="0" y="0" width="880" height="36" rx="10" fill="#161b22"/>
+    <rect x="0" y="26" width="880" height="10" fill="#161b22"/>
+    <circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+    <circle cx="40" cy="18" r="6" fill="#febc2e"/>
+    <circle cx="60" cy="18" r="6" fill="#28c840"/>
+    <text x="440" y="22" text-anchor="middle" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="12" font-weight="500" fill="#8b949e">claude-prime — zsh</text>
+
+    <!-- Terminal content -->
+    <g transform="translate(28, 66)">
+      <!-- Prompt -->
+      <text font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13">
+        <tspan fill="#7ee787">~/my-project</tspan><tspan fill="#8b949e"> $ </tspan><tspan fill="#c9d1d9">claude</tspan>
+      </text>
+      <text y="20" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13">
+        <tspan fill="#d2a8ff">❯</tspan><tspan fill="#c9d1d9"> </tspan><tspan fill="#79c0ff">/optimus-prime</tspan>
+      </text>
+
+      <!-- ASCII block title — "CLAUDE PRIME" single line, ANSI Shadow -->
+      <text font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="7.5" xml:space="preserve">
+<tspan x="0" dy="40" fill="#e6edf3"> ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗  </tspan><tspan fill="#e3b341">██████╗ ██████╗ ██╗███╗   ███╗███████╗</tspan>
+<tspan x="0" dy="9" fill="#e6edf3">██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝  </tspan><tspan fill="#e3b341">██╔══██╗██╔══██╗██║████╗ ████║██╔════╝</tspan>
+<tspan x="0" dy="9" fill="#e6edf3">██║     ██║     ███████║██║   ██║██║  ██║█████╗    </tspan><tspan fill="#e3b341">██████╔╝██████╔╝██║██╔████╔██║█████╗  </tspan>
+<tspan x="0" dy="9" fill="#e6edf3">██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝    </tspan><tspan fill="#e3b341">██╔═══╝ ██╔══██╗██║██║╚██╔╝██║██╔══╝  </tspan>
+<tspan x="0" dy="9" fill="#e6edf3">╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗  </tspan><tspan fill="#e3b341">██║     ██║  ██║██║██║ ╚═╝ ██║███████╗</tspan>
+<tspan x="0" dy="9" fill="#e6edf3"> ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝  </tspan><tspan fill="#e3b341">╚═╝     ╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚══════╝</tspan>
+      </text>
+
+      <!-- Subtitle -->
+      <text y="118" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13" fill="#8b949e">Get more from Claude Code — no setup headache.</text>
+
+      <!-- Tags -->
+      <text y="148" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13" xml:space="preserve"><tspan fill="#58a6ff">[</tspan><tspan fill="#7ee787">✓</tspan><tspan fill="#c9d1d9"> SKILLS</tspan><tspan fill="#58a6ff">]</tspan><tspan> </tspan><tspan fill="#58a6ff">[</tspan><tspan fill="#7ee787">✓</tspan><tspan fill="#c9d1d9"> AGENTS</tspan><tspan fill="#58a6ff">]</tspan><tspan> </tspan><tspan fill="#58a6ff">[</tspan><tspan fill="#7ee787">✓</tspan><tspan fill="#c9d1d9"> HOOKS</tspan><tspan fill="#58a6ff">]</tspan><tspan> </tspan><tspan fill="#58a6ff">[</tspan><tspan fill="#7ee787">✓</tspan><tspan fill="#c9d1d9"> MEMORY</tspan><tspan fill="#58a6ff">]</tspan></text>
+
+      <!-- Priming output -->
+      <text y="178" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13">
+        <tspan fill="#8b949e">Priming your project...</tspan>
+      </text>
+      <text y="200" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13">
+        <tspan fill="#7ee787">✓</tspan><tspan fill="#c9d1d9"> All set. Ready to build.</tspan>
+      </text>
+      <!-- Animated skill examples -->
+      <text y="228" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13" opacity="0" xml:space="preserve"><tspan fill="#d2a8ff">❯ </tspan><tspan fill="#58a6ff">/cook</tspan><tspan fill="#c9d1d9"> Add user auth with Google OAuth</tspan>
+        <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.02;0.18;0.2;1" dur="15s" repeatCount="indefinite"/>
+      </text>
+      <text y="228" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13" opacity="0" xml:space="preserve"><tspan fill="#d2a8ff">❯ </tspan><tspan fill="#58a6ff">/fix</tspan><tspan fill="#c9d1d9"> Checkout returns 500 on empty cart</tspan>
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.2;0.22;0.38;0.4;1" dur="15s" repeatCount="indefinite"/>
+      </text>
+      <text y="228" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13" opacity="0" xml:space="preserve"><tspan fill="#d2a8ff">❯ </tspan><tspan fill="#58a6ff">/research</tspan><tspan fill="#c9d1d9"> How does our app handle uploads?</tspan>
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.4;0.42;0.58;0.6;1" dur="15s" repeatCount="indefinite"/>
+      </text>
+      <text y="228" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13" opacity="0" xml:space="preserve"><tspan fill="#d2a8ff">❯ </tspan><tspan fill="#58a6ff">/discuss</tspan><tspan fill="#c9d1d9"> WebSocket or SSE for notifications?</tspan>
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.6;0.62;0.78;0.8;1" dur="15s" repeatCount="indefinite"/>
+      </text>
+      <text y="228" font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="13" opacity="0" xml:space="preserve"><tspan fill="#d2a8ff">❯ </tspan><tspan fill="#58a6ff">/ask</tspan><tspan fill="#c9d1d9"> What ORM are we using?</tspan>
+        <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.8;0.82;0.98;1" dur="15s" repeatCount="indefinite"/>
+      </text>
+
+      <rect x="0" y="244" width="7" height="12" fill="#58a6ff" opacity="0.7" rx="1">
+        <animate attributeName="opacity" values="0.7;0;0.7" dur="1.2s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+
+    <!-- RIGHT SIDE: logo -->
+    <g transform="translate(680, 125)">
+      <text font-family="'SF Mono', 'Fira Code', Menlo, monospace" xml:space="preserve">
+<tspan x="27" dy="0"  font-size="11" fill="#e3b341" opacity="0.5"> █   ▄█▄   █</tspan>
+<tspan x="27" dy="12" font-size="11" fill="#e3b341" opacity="0.5"> █▄ ▄███▄ ▄█</tspan>
+<tspan x="30" dy="11" font-size="11" fill="#e3b341" opacity="0.55">████████████</tspan>
+<tspan x="0"  dy="24" font-size="26" fill="#e3b341" opacity="0.55"> ▐▛███▜▌</tspan>
+<tspan x="8"  dy="27" font-size="26" fill="#e3b341" opacity="0.55"> ██████</tspan>
+<tspan x="22" dy="20" font-size="16" fill="#e3b341" opacity="0.45"> ▄█    █▄</tspan>
+      </text>
+      <!-- Left flexing arm -->
+      <text font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="18" xml:space="preserve">
+<tspan x="-10" dy="41" fill="#e3b341" opacity="0.5">█</tspan>
+<tspan x="-10" dy="18" fill="#e3b341" opacity="0.55">▀██</tspan>
+      </text>
+      <!-- Right flexing arm -->
+      <text font-family="'SF Mono', 'Fira Code', Menlo, monospace" font-size="18" xml:space="preserve">
+<tspan x="142" dy="41" fill="#e3b341" opacity="0.5">█</tspan>
+<tspan x="120" dy="18" fill="#e3b341" opacity="0.55">██▀</tspan>
+      </text>
+    </g>
+  </g>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="368.5" width="1280" height="1.5" fill="url(#accentLine)"/>
+</svg>

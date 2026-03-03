@@ -1,0 +1,19 @@
+# Testing stuffs
+test_failures.log
+.coverage
+
+# env files
+.env*
+!.env.example
+
+# settings
+settings.local.json
+
+# version marker (created during sync)
+.prime-version
+
+# agent memory
+agent-memory-local
+
+# temp files
+tmp/
