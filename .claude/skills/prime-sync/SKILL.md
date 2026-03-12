@@ -49,7 +49,7 @@ Source = cloned prime repo. Target = CWD.
 **Flow:**
 1. Read current version from `.claude/.prime-version` in CWD
 2. Generate timestamp: `date +%Y%m%d%H%M%S`
-3. Clone prime repo: `git clone https://github.com/Vibe-Builders/claude-prime.git /tmp/claude-prime-sync-<timestamp>/`
+3. Clone prime repo: `git clone https://github.com/avibebuilder/claude-prime.git /tmp/claude-prime-sync-<timestamp>/`
 4. Set source = `/tmp/claude-prime-sync-<timestamp>/`, target = CWD
 5. Continue to shared process below
 6. Clean up `/tmp/claude-prime-sync-<timestamp>/` after sync completes (success or failure)

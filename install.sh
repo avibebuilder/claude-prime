@@ -3,7 +3,7 @@
 # ============================================================================
 # Claude Prime - Remote Installer
 # ============================================================================
-# Usage: bash <(curl -fsSL https://raw.githubusercontent.com/Vibe-Builders/claude-prime/main/install.sh)
+# Usage: bash <(curl -fsSL https://raw.githubusercontent.com/avibebuilder/claude-prime/main/install.sh)
 #
 # Installs .claude/ directory into the current working directory.
 #
@@ -22,7 +22,7 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 # ── Configuration ────────────────────────────────────────────────────────────
-REPO="Vibe-Builders/claude-prime"
+REPO="avibebuilder/claude-prime"
 GITHUB_API="https://api.github.com/repos/${REPO}"
 INSTALL_DIR="$(pwd)"
 
