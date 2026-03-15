@@ -70,42 +70,6 @@ else
     echo -e "  ${GREEN}✓${NC} Created .gitignore with ${#GITIGNORE_ENTRIES[@]} entries"
 fi
 
-# Update .claude/.gitignore
-CLAUDE_GITIGNORE_FILE="$SCRIPT_DIR/.gitignore"
-CLAUDE_GITIGNORE_ENTRIES=(
-    "touch-skill"
-    "optimus-prime"
-    "convo-analysis"
-    "prime-sync"
-)
-
-if [ -f "$CLAUDE_GITIGNORE_FILE" ]; then
-    claude_entries_added=0
-    # Add newline only if file doesn't already end with one
-    if [ -s "$CLAUDE_GITIGNORE_FILE" ] && [ "$(tail -c 1 "$CLAUDE_GITIGNORE_FILE")" != "" ]; then
-        echo "" >> "$CLAUDE_GITIGNORE_FILE"
-    fi
-    for entry in "${CLAUDE_GITIGNORE_ENTRIES[@]}"; do
-        if ! grep -qxF "$entry" "$CLAUDE_GITIGNORE_FILE" 2>/dev/null; then
-            echo "$entry" >> "$CLAUDE_GITIGNORE_FILE"
-            echo -e "  ${GREEN}✓${NC} Added to .claude/.gitignore: $entry"
-            ((claude_entries_added++))
-        fi
-    done
-
-    if [ $claude_entries_added -eq 0 ]; then
-        echo -e "  ${GREEN}✓${NC} All entries already present in .claude/.gitignore"
-    else
-        echo -e "  ${GREEN}✓${NC} Added $claude_entries_added entries to .claude/.gitignore"
-    fi
-else
-    echo -e "  ${YELLOW}Creating .claude/.gitignore...${NC}"
-    for entry in "${CLAUDE_GITIGNORE_ENTRIES[@]}"; do
-        echo "$entry" >> "$CLAUDE_GITIGNORE_FILE"
-    done
-    echo -e "  ${GREEN}✓${NC} Created .claude/.gitignore with ${#CLAUDE_GITIGNORE_ENTRIES[@]} entries"
-fi
-
 echo ""
 
 # ============================================================================

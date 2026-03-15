@@ -27,13 +27,6 @@ const GITIGNORE_ENTRIES = [
   ".mcp.json",
 ];
 
-const CLAUDE_GITIGNORE_ENTRIES = [
-  "touch-skill",
-  "optimus-prime",
-  "convo-analysis",
-  "prime-sync",
-];
-
 function handleCancel(value) {
   if (isCancel(value)) {
     cancel("Initialization cancelled.");
@@ -72,15 +65,6 @@ async function stageGitignore(installDir) {
 
   const gitignorePath = path.join(installDir, ".gitignore");
   ensureGitignoreEntries(gitignorePath, GITIGNORE_ENTRIES, ".gitignore");
-
-  const claudeGitignorePath = path.join(installDir, ".claude", ".gitignore");
-  if (fs.existsSync(path.join(installDir, ".claude"))) {
-    ensureGitignoreEntries(
-      claudeGitignorePath,
-      CLAUDE_GITIGNORE_ENTRIES,
-      ".claude/.gitignore"
-    );
-  }
 }
 
 async function stageSkillEnvFiles(installDir) {
