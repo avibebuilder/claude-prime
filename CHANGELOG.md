@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- ✨ Add README for claude-prime CLI with installation instructions and usage examples
+- ♻️ Remove hardcoded .claude/.gitignore entries from initialization scripts
 ## 1.1.0
 
 - ✨ Add npm CLI package, idempotent release pipeline, and skill refinements
