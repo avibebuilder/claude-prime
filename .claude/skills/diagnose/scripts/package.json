@@ -1,7 +1,7 @@
 {
-  "name": "debug-scripts",
+  "name": "diagnose-scripts",
   "version": "1.0.0",
-  "description": "Debug scripts for the debug skill",
+  "description": "Debug scripts for the diagnose skill",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"

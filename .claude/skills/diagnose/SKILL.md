@@ -1,5 +1,5 @@
 ---
-name: debug
+name: diagnose
 description: "Trace and diagnose runtime bugs with evidence. Use when something isn't working but code looks correct, when you need to understand what's actually happening at runtime, or when investigating issues before fixing."
 argument-hint: bug-description
 ---
@@ -27,7 +27,7 @@ Check conversation context and skip completed steps.
 ### 3. Instrument
 - Start debug server and add instrumentation at hypothesis-relevant code paths
 - Use `#region agent log` / `#endregion` markers for all instrumentation
-- Reference `debug/references/runtime-debugging.md` for patterns and log schema
+- Reference `diagnose/references/runtime-debugging.md` for patterns and log schema
 - Tag each log point with the relevant `hypothesisId`
 - **For browser/UI bugs**: combine with browser skill to reproduce and inspect
 
@@ -37,7 +37,7 @@ Check conversation context and skip completed steps.
 **GATE**: User confirms reproduction.
 
 ### 5. Gather & Analyze
-- Read debug logs from `.claude/tmp/debug-{sessionId}.log`
+- Read debug logs from `.claude/tmp/diagnose-{sessionId}.log`
 - Correlate log entries with hypotheses
 - Eliminate or confirm causes based on evidence
 

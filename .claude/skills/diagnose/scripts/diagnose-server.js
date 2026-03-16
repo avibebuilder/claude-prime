@@ -8,7 +8,7 @@ const PORT = 6143;
 const HOST = '127.0.0.1';
 const sessionId = process.argv[2] || String(Date.now());
 const logDir = join(process.cwd(), '.claude', 'tmp');
-const logFile = join(logDir, `debug-${sessionId}.log`);
+const logFile = join(logDir, `diagnose-${sessionId}.log`);
 
 mkdirSync(logDir, { recursive: true });
 

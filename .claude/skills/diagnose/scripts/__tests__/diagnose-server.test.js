@@ -1,4 +1,4 @@
-// Run with: node --test __tests__/debug-server.test.js
+// Run with: node --test __tests__/diagnose-server.test.js
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert';
 import { spawn } from 'node:child_process';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { request } from 'node:http';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const SERVER_PATH = join(__dirname, '..', 'debug-server.js');
+const SERVER_PATH = join(__dirname, '..', 'diagnose-server.js');
 const PORT = 6143;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 
@@ -62,11 +62,11 @@ function killServer(proc) {
   });
 }
 
-describe('debug-server', () => {
+describe('diagnose-server', () => {
   let tmpDir;
 
   before(() => {
-    tmpDir = join('/tmp', `debug-server-test-${Date.now()}`);
+    tmpDir = join('/tmp', `diagnose-server-test-${Date.now()}`);
     mkdirSync(tmpDir, { recursive: true });
   });
 
@@ -227,7 +227,7 @@ describe('debug-server', () => {
     });
 
     it('should include custom session ID in log filename', () => {
-      assert.ok(serverInfo.logFile.includes(`debug-${customSid}.log`));
+      assert.ok(serverInfo.logFile.includes(`diagnose-${customSid}.log`));
     });
   });
 

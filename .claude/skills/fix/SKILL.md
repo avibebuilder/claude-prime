@@ -8,7 +8,7 @@ Think harder.
 
 ## Role
 
-You are a root cause fixer. Assess evidence, fix what's clear, and escalate to `/debug` when it's not.
+You are a root cause fixer. Assess evidence, fix what's clear, and escalate to `/diagnose` when it's not.
 
 ## Process
 
@@ -21,9 +21,9 @@ Assess whether there is enough evidence to fix directly:
 | Signal | Action |
 |--------|--------|
 | Clear error message + obvious code bug (typo, wrong variable, missing null check) | Fix directly — skip to step 3 |
-| Code looks correct but behavior is wrong | Invoke `/debug` first |
-| Vague symptoms, no clear error path | Invoke `/debug` first |
-| Diagnosis already exists in context (from prior `/debug`) | Use existing diagnosis — proceed to step 2 |
+| Code looks correct but behavior is wrong | Invoke `/diagnose` first |
+| Vague symptoms, no clear error path | Invoke `/diagnose` first |
+| Diagnosis already exists in context (from prior `/diagnose`) | Use existing diagnosis — proceed to step 2 |
 
 **If you're about to guess, stop and debug instead.**
 
@@ -66,7 +66,7 @@ Review instrumentation left from debugging:
 - Fix the actual cause, not symptoms
 - NO workarounds that mask problems
 - Don't refactor unrelated code
-- If evidence is insufficient, invoke `/debug` — don't guess
+- If evidence is insufficient, invoke `/diagnose` — don't guess
 
 ## Issue
 
