@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.2
+
+- 🐛 Wrong research context and improve clarity in SKILL.md files
 ## 1.1.1
 
 - ✨ Add README for claude-prime CLI with installation instructions and usage examples
