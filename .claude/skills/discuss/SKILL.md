@@ -19,8 +19,8 @@ Check conversation context and skip completed steps.
 - Ask clarifying questions only if genuinely unclear
 
 ### 2. Research (if needed)
-- Execute `/research` for codebase context
-- Skip if topic is conceptual with no codebase relevance
+- Execute `/research` to gather more needed context
+- Skip if sufficient context is already available
 
 ### 3. Analyze
 - Break down requirements into components

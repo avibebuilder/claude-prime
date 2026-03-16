@@ -10,8 +10,7 @@ Ultrathink.
 
 | Type               | Action                           |
 | ------------------ | -------------------------------- |
-| Codebase question  | Execute `/research` first |
-| Knowledge question | Answer directly                  |
+| Need more context  | Execute `/research` first, don't only trust on your trained knowledge        |
 | Already researched | Use prior findings               |
 
 ## Role

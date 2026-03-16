@@ -21,7 +21,8 @@ Before starting, check conversation context and skip completed steps.
 **GATE**: User confirms before proceeding.
 
 ### 2. Research (if needed)
-- Execute `/research` for codebase context and patterns
+- Execute `/research` to gather more needed context
+- Skip if sufficient context is already available 
 
 ### 3. Plan (if needed)
 - Execute `/give-plan` for multi-file or architectural changes

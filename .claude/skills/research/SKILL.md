@@ -2,7 +2,7 @@
 name: research
 context: fork
 agent: the-mechanic
-description: "Gather facts and context from codebase, docs, and web. Use when exploring patterns, finding implementations, looking up documentation, or researching before decisions."
+description: "Gather facts and context from codebase, docs, and web,... Use when exploring patterns, finding implementations, looking up documentation, or researching before decisions."
 argument-hint: what-to-research
 ---
 

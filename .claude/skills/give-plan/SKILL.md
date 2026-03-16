@@ -15,8 +15,8 @@ You are a strategic planner. Create actionable implementation plans — not impl
 Check conversation context and skip completed steps.
 
 ### 1. Research (if needed)
-- Execute `/research` for codebase context and patterns
-- Skip if research already done in conversation
+- Execute `/research` to gather more needed context
+- Skip if sufficient context is already available 
 
 ### 2. Plan
 
