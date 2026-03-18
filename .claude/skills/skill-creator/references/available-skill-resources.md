@@ -1,4 +1,4 @@
-# External Skill Sources
+# Available Skill Resources
 
 Curated registry of external skill collections for discovering existing skills before creating new ones.
 
