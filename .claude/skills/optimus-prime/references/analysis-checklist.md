@@ -43,11 +43,11 @@ For each detected convention, apply the **rule test**:
 
 ## Starter Skills Matching
 
-After detecting the stack, browse `.claude/starter-skills/` for relevant domain starter skills. Copy matching starters to `.claude/skills/` and adapt tooling-specific parts if needed (e.g., swap Biome references for ESLint). For stacks without a matching starter, create a new skill via `/touch-skill`.
+After detecting the stack, browse `.claude/starter-skills/` for relevant domain starter skills. Copy matching starters to `.claude/skills/` and adapt tooling-specific parts if needed (e.g., swap Biome references for ESLint). For stacks without a matching starter, create a new skill via `/skill-creator`.
 
 ## Questions to Answer
 
-1. **What stack is this?** → Browse `.claude/starter-skills/` for matching starters, use `/touch-skill` for uncovered stacks
+1. **What stack is this?** → Browse `.claude/starter-skills/` for matching starters, use `/skill-creator` for uncovered stacks
 2. **What hard constraints exist?** → Guardrails → `.claude/rules/` (auto-attached)
 3. **What architectural context is useful?** → References → `.claude/project/` (on-demand)
 

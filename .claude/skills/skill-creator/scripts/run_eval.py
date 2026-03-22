@@ -6,13 +6,14 @@ for a set of queries. Outputs results as JSON.
 """
 
 import argparse
+import atexit
 import json
 import os
 import select
+import shutil
 import subprocess
 import sys
 import time
-import uuid
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
@@ -32,153 +33,148 @@ def find_project_root() -> Path:
     return current
 
 
+def _restore_backed_up_skills(skills_dir: Path, backup_dir: Path) -> None:
+    """Restore any skills from the backup directory back to their original location."""
+    if not backup_dir.exists():
+        return
+    for skill_backup in backup_dir.iterdir():
+        if skill_backup.is_dir():
+            target = skills_dir / skill_backup.name
+            if target.exists():
+                shutil.rmtree(target)
+            shutil.move(str(skill_backup), str(target))
+            print(f"Restored skill from backup: {skill_backup.name}", file=sys.stderr)
+    # Clean up backup dir if empty
+    if backup_dir.exists() and not any(backup_dir.iterdir()):
+        backup_dir.rmdir()
+
+
 def run_single_query(
     query: str,
     skill_name: str,
-    skill_description: str,
     timeout: int,
     project_root: str,
     model: str | None = None,
 ) -> bool:
     """Run a single query and return whether the skill was triggered.
 
-    Creates a command file in .claude/commands/ so it appears in Claude's
-    available_skills list, then runs `claude -p` with the raw query.
+    Expects that a command file already exists in .claude/commands/ (created
+    by run_eval). Runs `claude -p` with the raw query and checks whether
+    Claude invokes the Skill tool with the real skill name.
     Uses --include-partial-messages to detect triggering early from
     stream events (content_block_start) rather than waiting for the
     full assistant message, which only arrives after tool execution.
     """
-    unique_id = uuid.uuid4().hex[:8]
-    clean_name = f"{skill_name}-skill-{unique_id}"
-    project_commands_dir = Path(project_root) / ".claude" / "commands"
-    command_file = project_commands_dir / f"{clean_name}.md"
+    cmd = [
+        "claude",
+        "-p", query,
+        "--output-format", "stream-json",
+        "--verbose",
+        "--include-partial-messages",
+    ]
+    if model:
+        cmd.extend(["--model", model])
+
+    # Remove CLAUDECODE env var to allow nesting claude -p inside a
+    # Claude Code session. The guard is for interactive terminal conflicts;
+    # programmatic subprocess usage is safe.
+    env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+    env["CLAUDE_SILENT"] = "1"
+
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        cwd=project_root,
+        env=env,
+    )
+
+    triggered = False
+    start_time = time.time()
+    buffer = ""
+    # Track state for stream event detection
+    pending_tool_name = None
+    accumulated_json = ""
 
     try:
-        project_commands_dir.mkdir(parents=True, exist_ok=True)
-        # Use YAML block scalar to avoid breaking on quotes in description
-        indented_desc = "\n  ".join(skill_description.split("\n"))
-        command_content = (
-            f"---\n"
-            f"description: |\n"
-            f"  {indented_desc}\n"
-            f"---\n\n"
-            f"# {skill_name}\n\n"
-            f"This skill handles: {skill_description}\n"
-        )
-        command_file.write_text(command_content)
+        while time.time() - start_time < timeout:
+            if process.poll() is not None:
+                remaining = process.stdout.read()
+                if remaining:
+                    buffer += remaining.decode("utf-8", errors="replace")
+                break
 
-        cmd = [
-            "claude",
-            "-p", query,
-            "--output-format", "stream-json",
-            "--verbose",
-            "--include-partial-messages",
-        ]
-        if model:
-            cmd.extend(["--model", model])
+            ready, _, _ = select.select([process.stdout], [], [], 1.0)
+            if not ready:
+                continue
 
-        # Remove CLAUDECODE env var to allow nesting claude -p inside a
-        # Claude Code session. The guard is for interactive terminal conflicts;
-        # programmatic subprocess usage is safe.
-        env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+            chunk = os.read(process.stdout.fileno(), 8192)
+            if not chunk:
+                break
+            buffer += chunk.decode("utf-8", errors="replace")
 
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            cwd=project_root,
-            env=env,
-        )
-
-        triggered = False
-        start_time = time.time()
-        buffer = ""
-        # Track state for stream event detection
-        pending_tool_name = None
-        accumulated_json = ""
-
-        try:
-            while time.time() - start_time < timeout:
-                if process.poll() is not None:
-                    remaining = process.stdout.read()
-                    if remaining:
-                        buffer += remaining.decode("utf-8", errors="replace")
-                    break
-
-                ready, _, _ = select.select([process.stdout], [], [], 1.0)
-                if not ready:
+            while "\n" in buffer:
+                line, buffer = buffer.split("\n", 1)
+                line = line.strip()
+                if not line:
                     continue
 
-                chunk = os.read(process.stdout.fileno(), 8192)
-                if not chunk:
-                    break
-                buffer += chunk.decode("utf-8", errors="replace")
+                try:
+                    event = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
 
-                while "\n" in buffer:
-                    line, buffer = buffer.split("\n", 1)
-                    line = line.strip()
-                    if not line:
-                        continue
+                # Early detection via stream events
+                if event.get("type") == "stream_event":
+                    se = event.get("event", {})
+                    se_type = se.get("type", "")
 
-                    try:
-                        event = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
-
-                    # Early detection via stream events
-                    if event.get("type") == "stream_event":
-                        se = event.get("event", {})
-                        se_type = se.get("type", "")
-
-                        if se_type == "content_block_start":
-                            cb = se.get("content_block", {})
-                            if cb.get("type") == "tool_use":
-                                tool_name = cb.get("name", "")
-                                if tool_name in ("Skill", "Read"):
-                                    pending_tool_name = tool_name
-                                    accumulated_json = ""
-                                else:
-                                    return False
-
-                        elif se_type == "content_block_delta" and pending_tool_name:
-                            delta = se.get("delta", {})
-                            if delta.get("type") == "input_json_delta":
-                                accumulated_json += delta.get("partial_json", "")
-                                if clean_name in accumulated_json:
-                                    return True
-
-                        elif se_type in ("content_block_stop", "message_stop"):
-                            if pending_tool_name:
-                                return clean_name in accumulated_json
-                            if se_type == "message_stop":
+                    if se_type == "content_block_start":
+                        cb = se.get("content_block", {})
+                        if cb.get("type") == "tool_use":
+                            tool_name = cb.get("name", "")
+                            if tool_name in ("Skill", "Read"):
+                                pending_tool_name = tool_name
+                                accumulated_json = ""
+                            else:
                                 return False
 
-                    # Fallback: full assistant message
-                    elif event.get("type") == "assistant":
-                        message = event.get("message", {})
-                        for content_item in message.get("content", []):
-                            if content_item.get("type") != "tool_use":
-                                continue
-                            tool_name = content_item.get("name", "")
-                            tool_input = content_item.get("input", {})
-                            if tool_name == "Skill" and clean_name in tool_input.get("skill", ""):
-                                triggered = True
-                            elif tool_name == "Read" and clean_name in tool_input.get("file_path", ""):
-                                triggered = True
-                            return triggered
+                    elif se_type == "content_block_delta" and pending_tool_name:
+                        delta = se.get("delta", {})
+                        if delta.get("type") == "input_json_delta":
+                            accumulated_json += delta.get("partial_json", "")
+                            if skill_name in accumulated_json:
+                                return True
 
-                    elif event.get("type") == "result":
+                    elif se_type in ("content_block_stop", "message_stop"):
+                        if pending_tool_name:
+                            return skill_name in accumulated_json
+                        if se_type == "message_stop":
+                            return False
+
+                # Fallback: full assistant message
+                elif event.get("type") == "assistant":
+                    message = event.get("message", {})
+                    for content_item in message.get("content", []):
+                        if content_item.get("type") != "tool_use":
+                            continue
+                        tool_name = content_item.get("name", "")
+                        tool_input = content_item.get("input", {})
+                        if tool_name == "Skill" and skill_name in tool_input.get("skill", ""):
+                            triggered = True
+                        elif tool_name == "Read" and skill_name in tool_input.get("file_path", ""):
+                            triggered = True
                         return triggered
-        finally:
-            # Clean up process on any exit path (return, exception, timeout)
-            if process.poll() is None:
-                process.kill()
-                process.wait()
 
-        return triggered
+                elif event.get("type") == "result":
+                    return triggered
     finally:
-        if command_file.exists():
-            command_file.unlink()
+        # Clean up process on any exit path (return, exception, timeout)
+        if process.poll() is None:
+            process.kill()
+            process.wait()
+
+    return triggered
 
 
 def run_eval(
@@ -192,37 +188,94 @@ def run_eval(
     trigger_threshold: float = 0.5,
     model: str | None = None,
 ) -> dict:
-    """Run the full eval set and return results."""
-    results = []
+    """Run the full eval set and return results.
 
-    with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        future_to_info = {}
-        for item in eval_set:
-            for run_idx in range(runs_per_query):
-                future = executor.submit(
-                    run_single_query,
-                    item["query"],
-                    skill_name,
-                    description,
-                    timeout,
-                    str(project_root),
-                    model,
-                )
-                future_to_info[future] = (item, run_idx)
+    Sets up a temporary command file with the real skill name and backs up
+    any existing skill folder so Claude sees only the test command file.
+    Restores everything in a finally block (and via atexit for crash safety).
+    """
+    skills_dir = Path(project_root) / ".claude" / "skills"
+    backup_dir = skills_dir / ".eval-backup"
+    skill_dir = skills_dir / skill_name
+    commands_dir = Path(project_root) / ".claude" / "commands"
+    command_file = commands_dir / f"{skill_name}.md"
 
-        query_triggers: dict[str, list[bool]] = {}
-        query_items: dict[str, dict] = {}
-        for future in as_completed(future_to_info):
-            item, _ = future_to_info[future]
-            query = item["query"]
-            query_items[query] = item
-            if query not in query_triggers:
-                query_triggers[query] = []
-            try:
-                query_triggers[query].append(future.result())
-            except Exception as e:
-                print(f"Warning: query failed: {e}", file=sys.stderr)
-                query_triggers[query].append(False)
+    # --- Startup recovery: restore from any previous crashed run ---
+    if backup_dir.exists() and any(backup_dir.iterdir()):
+        print("Warning: found leftover .eval-backup from a crashed run, restoring...", file=sys.stderr)
+        _restore_backed_up_skills(skills_dir, backup_dir)
+
+    # --- Setup: backup real skill, create command file ---
+    atexit_registered = False
+
+    def _atexit_restore():
+        """Crash recovery: restore backed-up skill and remove command file."""
+        if command_file.exists():
+            command_file.unlink()
+        _restore_backed_up_skills(skills_dir, backup_dir)
+
+    try:
+        # Backup existing skill if it exists
+        if skill_dir.exists():
+            backup_dir.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(skill_dir), str(backup_dir / skill_name))
+
+        # Create command file with real skill name
+        commands_dir.mkdir(parents=True, exist_ok=True)
+        indented_desc = "\n  ".join(description.split("\n"))
+        command_content = (
+            f"---\n"
+            f"description: |\n"
+            f"  {indented_desc}\n"
+            f"---\n\n"
+            f"# {skill_name}\n\n"
+            f"This skill handles: {description}\n"
+        )
+        command_file.write_text(command_content)
+
+        # Register atexit handler for crash safety
+        atexit.register(_atexit_restore)
+        atexit_registered = True
+
+        # --- Run all queries in parallel ---
+        results = []
+
+        with ProcessPoolExecutor(max_workers=num_workers) as executor:
+            future_to_info = {}
+            for item in eval_set:
+                for run_idx in range(runs_per_query):
+                    future = executor.submit(
+                        run_single_query,
+                        item["query"],
+                        skill_name,
+                        timeout,
+                        str(project_root),
+                        model,
+                    )
+                    future_to_info[future] = (item, run_idx)
+
+            query_triggers: dict[str, list[bool]] = {}
+            query_items: dict[str, dict] = {}
+            for future in as_completed(future_to_info):
+                item, _ = future_to_info[future]
+                query = item["query"]
+                query_items[query] = item
+                if query not in query_triggers:
+                    query_triggers[query] = []
+                try:
+                    query_triggers[query].append(future.result())
+                except Exception as e:
+                    print(f"Warning: query failed: {e}", file=sys.stderr)
+                    query_triggers[query].append(False)
+
+    finally:
+        # --- Teardown: remove command file, restore backup ---
+        if command_file.exists():
+            command_file.unlink()
+        _restore_backed_up_skills(skills_dir, backup_dir)
+        # Unregister atexit handler since we've already cleaned up
+        if atexit_registered:
+            atexit.unregister(_atexit_restore)
 
     for query, triggers in query_triggers.items():
         item = query_items[query]

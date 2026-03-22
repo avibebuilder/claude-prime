@@ -33,13 +33,7 @@ project/
 
 <!-- Links only - no explanations -->
 
-## Critical Rules
-
-**IMPORTANT:** ALWAYS check `.claude/project/` for project-specific context before implementation.
-
-**IMPORTANT:** Analyze the skills catalog and activate the skills that are needed for the task during the process.
-
 <!--
-REMINDER: This file should stay under 100 lines.
+REMINDER: This file should stay under 200 lines.
 All details (commands, code patterns, env vars) belong in .claude/project/ files.
 -->

@@ -2,7 +2,7 @@
 name: research
 context: fork
 agent: the-mechanic
-description: "Gather facts and context from codebase, docs, and web,... Use when exploring patterns, finding implementations, looking up documentation, or researching before decisions."
+description: "Gather facts and context from codebase, docs, and web. Use when exploring, investigating, tracing, or looking into something — whether that's understanding how existing code works, evaluating options and alternatives, mapping dependency chains, finding implementations, or researching before decisions. Triggers: 'explore how X works', 'look into', 'investigate', 'trace through', 'what are the options', 'research X', 'how does our codebase handle X'. Do NOT use for implementation, running tests, code review, or explaining general concepts."
 argument-hint: what-to-research
 ---
 
@@ -22,6 +22,7 @@ Determine the specific questions to answer and which sources to check in what or
 - Spawn multiple parallel tool calls wherever possible to maximize speed
 - Each search must have a clear purpose. If an angle isn't yielding results, note the gap and move on
 - Recognize diminishing returns — don't keep rephrasing the same searches hoping for different results
+- For library/tool comparisons: verify versions, maintenance status, and last release date via web search. Do not rely on trained knowledge for version numbers or dates
 
 ### 4. Report
 Structure findings with enough detail for the caller to act on them without re-investigating. Report what you found AND what you couldn't find.
@@ -51,6 +52,14 @@ Structure findings with enough detail for the caller to act on them without re-i
 ```
 
 Include sections that have content. Drop empty ones.
+
+## Gotchas
+
+- **Trusting stale trained knowledge**: Always verify against current source code and live documentation.
+- **Searching too broadly**: Start with the most specific query. Broaden only if results are empty.
+- **Stopping at first result**: The first match often isn't the best one. Check 2-3 sources before concluding.
+- **Not reporting gaps**: What you couldn't find is as important as what you found. Always note gaps.
+- **Over-researching**: Recognize diminishing returns. 80% confidence is often enough to act on.
 
 ## Constraints
 

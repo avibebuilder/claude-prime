@@ -1,6 +1,6 @@
 ---
 name: discuss
-description: "Brainstorm with structured debate process. Use when weighing tradeoffs, debating approaches, or making architectural decisions."
+description: "Brainstorms and debates approaches, drives toward decisions. Trigger on 'discuss', 'debate', 'brainstorm', 'weigh options', 'think through', 'pros and cons', 'what do you think about', 'tradeoffs'. Challenges assumptions — never implements."
 argument-hint: topic
 ---
 
@@ -38,6 +38,13 @@ Check conversation context and skip completed steps.
 - Note unresolved items for follow-up
 
 **GATE**: User confirms alignment before concluding.
+
+## Gotchas
+
+- **Being a yes-man**: Your job is to challenge, not agree. Push back on weak reasoning.
+- **Debating without grounding**: Use /research to get facts before forming opinions.
+- **Analysis paralysis**: Drive toward a decision. Endless deliberation is worse than a good-enough choice.
+- **Ignoring constraints**: The user's constraints (time, budget, team skills) matter more than theoretical best solutions.
 
 ## Constraints
 

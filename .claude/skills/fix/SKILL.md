@@ -1,6 +1,6 @@
 ---
 name: fix
-description: "Debug and fix issues. Use when troubleshooting bugs, resolving errors, or diagnosing failures in the codebase."
+description: "Fix bugs and broken behavior. Use when the user reports something going wrong: errors, crashes, incorrect results, or unexpected behavior. This includes API errors (500, 404, 403), cross-origin/CORS problems, database exceptions, frontend crashes or rendering failures, wrong data (duplicates, off-by-one, wrong dates, timezone problems), broken forms or submissions, configuration issues causing runtime failures, and regressions where working features broke. Trigger whenever the user describes a symptom — an error message, a wrong result, a crash, a misbehaving UI element, or a request that fails. Do NOT use for new features, code explanations, architecture questions, research, or comparisons."
 argument-hint: issue
 ---
 
@@ -60,6 +60,14 @@ Review instrumentation left from debugging:
 - If any reveal valuable observability gaps → suggest converting to proper logging (user decides)
 - Stop debug server if running
 - Delete debug log files
+
+## Gotchas
+
+- **Fixing symptoms, not causes**: A null check at the crash site is rarely the real fix. Trace back to where the bad value originates.
+- **Guessing without evidence**: If you're about to add a "maybe this will fix it" change, stop and use /diagnose instead.
+- **Scope expansion**: Fix the reported bug. Don't refactor the surrounding code.
+- **Forgetting instrumentation cleanup**: After fixing, remove ALL `#region agent log` blocks. Search the entire affected area.
+- **Breaking other tests**: Run the full relevant test suite, not just the test for the fixed bug.
 
 ## Constraints
 

@@ -6,9 +6,9 @@
 
 ## Size Guideline
 
-**Soft limit: ~100 lines**
+**Soft limit: ~200 lines**
 
-If your CLAUDE.md exceeds 100 lines, you're likely including content that belongs in `.claude/project/` files.
+If your CLAUDE.md exceeds 200 lines, you're likely including content that belongs in `.claude/project/` files.
 
 ## Content Boundaries
 
@@ -47,6 +47,15 @@ This file provides guidance to Claude Code when working with this repository.
 ### 2. Project Overview
 One to two sentences describing what the project does. Keep it brief.
 
+### 2b. Architecture Constraints (if applicable)
+If the project has **unconventional architecture that contradicts common assumptions**, surface it immediately after the overview. Example patterns that MUST be called out prominently:
+- "There is NO backend API" (client-side-only data access)
+- "No database ORM — raw SQL only"
+- "No REST endpoints — everything is event-driven"
+- "Frontend is statically deployed — no SSR/server"
+
+These "no X" patterns are critical because Claude will default to the conventional approach without them. Use bold text and state both what the project does NOT do and what it does instead.
+
 ### 3. Project Rules (References Only)
 ```markdown
 ## Project Rules
@@ -71,31 +80,9 @@ Basic tree showing top-level organization. Max 10-15 lines.
 | Schema | `path/to/schema` |
 ```
 
-### 6. Critical Rules (Always Loaded)
-
-**Exception to on-demand loading.** Critical Rules are rules that MUST be remembered every conversation. They are NOT loaded on demand - they stay in CLAUDE.md.
-
-```markdown
-## Critical Rules
-
-**IMPORTANT:** ALWAYS check `.claude/project/` before implementation.
-**IMPORTANT:** Project rules take precedence over skill guidelines.
-**IMPORTANT:** Analyze skills catalog and activate needed skills.
-```
-
-**What belongs here:**
-- Rules that must be enforced every single conversation
-- Reminders that prevent common mistakes
-- Process requirements (check X before Y)
-
-**What does NOT belong here:**
-- Content that duplicates `.claude/project/` files
-- Detailed explanations (keep rules concise)
-- Anything that can be loaded on-demand when needed
-
 ## Key Principles
 
 1. **Entry point only** - Reference files, never duplicate content
 2. **Dynamic loading** - Details are loaded on-demand from referenced files
 3. **Scannable** - Should be readable in under 30 seconds
-4. **Under 100 lines** - If longer, content belongs elsewhere
+4. **Under 200 lines** - If longer, content belongs elsewhere

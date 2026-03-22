@@ -1,6 +1,6 @@
 ---
 name: cook
-description: "Full implementation with testing. Use when building features, adding functionality, or implementing changes that need coding, tests, and review."
+description: "Implement, build, create, or add any feature, endpoint, page, component, or functionality. Use this skill whenever the user asks you to write new code or make code changes — whether it's adding an API endpoint, building a UI page, creating an export feature, wiring up a webhook, implementing a search/filter, or any other hands-on coding task. This is the default skill for all 'build this', 'add this', 'create this', 'wire up', 'implement' requests. Covers the full cycle: clarify requirements, plan if needed, write code, run tests, and review. Do NOT use for pure research, debugging, documentation, or explanation — only when the user wants working code delivered."
 argument-hint: what-to-implement
 ---
 
@@ -51,6 +51,14 @@ Before starting, check conversation context and skip completed steps.
 - Tests added/modified
 - Key decisions made
 - Any follow-up items
+
+## Gotchas
+
+- **Scope creep**: Adding "nice to have" features not in the requirements. Implement exactly what was asked.
+- **Skipping the plan gate**: For multi-file changes, always get plan approval. The cost of a wrong direction is high.
+- **Tests that mirror implementation**: Tests should verify behavior from the outside, not just re-state what the code does.
+- **Ignoring existing test patterns**: Always check how the project writes tests before creating new ones.
+- **Implementing before researching**: Don't write code until you understand existing patterns in the area you're changing.
 
 ## Constraints
 

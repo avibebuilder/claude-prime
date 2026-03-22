@@ -1,6 +1,6 @@
 ---
 name: repomix
-description: "Package code repositories into AI-friendly files. Use this skill when packaging codebases for AI analysis, creating repository snapshots, analyzing third-party libraries, preparing security audits, or generating documentation context. Supports multiple output formats and token counting."
+description: "Packs repositories into single AI-friendly files. Trigger on 'pack this repo', 'create a repomix', 'package the codebase', 'prepare code for AI', 'bundle this repo for Claude', 'token count this repo'. Supports XML/markdown/plain output with token counting."
 ---
 
 # Repomix Skill
@@ -141,10 +141,7 @@ repomix --init  # creates repomix.config.json
 
 Repomix automatically counts tokens for individual files, total repository, and per-format output.
 
-Typical LLM context limits:
-- Claude Sonnet 4.5: ~200K tokens
-- GPT-4: ~128K tokens
-- GPT-3.5: ~16K tokens
+Typical LLM context limits: ~256K
 
 ### Token Count Optimization
 Understanding your codebase's token distribution is crucial for optimizing AI interactions. Use the --token-count-tree option to visualize token usage across your project:
@@ -228,6 +225,12 @@ When user requests repository packaging:
 For detailed information, see:
 - [Configuration Reference](./references/configuration.md) - Config files, include/exclude patterns, output formats, advanced options
 - [Usage Patterns](./references/usage-patterns.md) - AI analysis workflows, security audit preparation, documentation generation, library evaluation
+
+## Gotchas
+
+- **Token budget blowout**: Large repos can produce massive files. Use --include to scope.
+- **Sensitive data leakage**: Check .gitignore and .repomixignore — .env and credentials get included by default.
+- **Remote rate limits**: GitHub API rate limiting when packing remote repos. Use authenticated requests.
 
 ## Additional Resources
 

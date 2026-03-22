@@ -23,6 +23,7 @@ const GITIGNORE_ENTRIES = [
   "docs/assets/*",
   "docs/research/*",
   "docs/session-reports/*",
+  "docs/test-cases/*",
   "claude-prime-*.zip",
   ".mcp.json",
 ];

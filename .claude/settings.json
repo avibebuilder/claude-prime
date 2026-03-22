@@ -42,6 +42,22 @@
         ]
       }
     ],
+    "SessionStart": [
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/self-improve/self-improve-extract.py"
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/self-improve/self-improve-surface.py"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
@@ -58,10 +74,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay $CLAUDE_PROJECT_DIR/.claude/noti.mp3"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/play-noti.py"
           }
         ]
       }
-    ]
+    ],
+    "SessionEnd": []
   }
 }

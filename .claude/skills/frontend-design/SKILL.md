@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: "Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when making design decisions, building web components, choosing color palettes, selecting typography, designing charts, or researching visual patterns. Queries design database for inspiration."
+description: "Builds distinctive, production-grade UIs that avoid generic AI aesthetics. Trigger on 'build a UI for', 'design this page', 'make it look good', 'create a landing page', 'build a dashboard', 'style this component', 'pick a color palette', 'choose fonts for'. Queries design database for inspiration."
 ---
 
 This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
@@ -100,6 +100,14 @@ For comprehensive design system recommendations, follow the multi-domain search 
 |-----------|---------|
 | [quality-checklist.md](./references/quality-checklist.md) | Visual, interaction, accessibility checks |
 | [design-system-generation.md](./references/design-system-generation.md) | Multi-domain search orchestration for design system generation |
+
+## Gotchas
+
+- **Defaulting to safe choices**: Inter font + blue primary + white background is AI slop. Be distinctive.
+- **Inconsistent design system**: Don't mix design tokens. Use one consistent system throughout.
+- **Ignoring contrast ratios**: WCAG AA minimum. Beautiful but unreadable is a failure.
+- **Purple gradients**: The #1 AI cliche. Avoid unless specifically requested.
+- **Missing cursor:pointer on clickable elements**: A small detail that matters for UX.
 
 ## Data Source
 

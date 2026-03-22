@@ -39,7 +39,15 @@ def validate_skill(skill_path):
         return False, f"Invalid YAML in frontmatter: {e}"
 
     # Define allowed properties
-    ALLOWED_PROPERTIES = {'name', 'description', 'license', 'allowed-tools', 'metadata', 'compatibility'}
+    # AgentSkills.io standard: name, description, license, compatibility, metadata, allowed-tools
+    # Claude Code extensions: argument-hint, disable-model-invocation, user-invocable, model, context, agent, hooks
+    ALLOWED_PROPERTIES = {
+        # AgentSkills.io standard (https://agentskills.io/specification)
+        'name', 'description', 'license', 'compatibility', 'metadata', 'allowed-tools',
+        # Claude Code extensions (https://code.claude.com/docs/en/skills)
+        'argument-hint', 'disable-model-invocation', 'user-invocable',
+        'model', 'context', 'agent', 'hooks',
+    }
 
     # Check for unexpected properties (excluding nested keys under metadata)
     unexpected_keys = set(frontmatter.keys()) - ALLOWED_PROPERTIES

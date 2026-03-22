@@ -2,7 +2,7 @@
 name: test
 context: fork
 agent: the-mechanic
-description: "Run tests and analyze results. Use when verifying code changes, running test suites, or checking test coverage."
+description: "Run test suites and report pass/fail results. Use when the user asks to execute tests, check whether tests pass, or verify code changes didn't break anything. Triggers: 'run tests', 'check if tests pass', 'verify nothing broke', 'run e2e tests', 'test the endpoints', 'run tests/unit/test_foo.py', 'let me know the results'. This skill executes test commands and reports output — it does NOT write tests, fix tests, explain test code, plan tests, or research testing practices. If the request is about learning, writing, or researching testing rather than executing and reporting, do not use this skill."
 argument-hint: what-to-test-and-outcome
 ---
 
@@ -51,6 +51,13 @@ Detect test framework from project config and look for existing test scripts (`M
 - Lines: X%
 - Branches: X%
 ```
+
+## Gotchas
+
+- **Wrong test scope**: Match what the user asked to verify. "Run tests for the auth module" doesn't mean "run all tests."
+- **Missing env setup**: Some test suites need env vars, database connections, or build steps first. Check project setup.
+- **Treating flaky tests as passes**: If a test passes once after failing, it may be flaky. Note this in the report.
+- **Not using project test commands**: Check package.json scripts, Makefile, justfile before running raw test framework commands.
 
 ## Constraints
 

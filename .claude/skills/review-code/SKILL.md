@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: "Review code for quality and issues. Use when reviewing diffs, PRs, branches, or staged changes against project conventions."
+description: "Review code for quality and issues. Use when the user wants feedback on code they already wrote or changed. Activate whenever the user asks you to review, look over, check, or critique their work — including when they reference a specific file path they modified, describe a refactor they did, or point to their own changes in any way. Covers PRs, branches, commits, diffs, staged changes, and named files or modules the user updated. The distinguishing signal: the user has already made changes and seeks a second opinion or quality check, rather than asking you to implement something new or debug a runtime problem."
 argument-hint: what-to-review
 ---
 
@@ -74,6 +74,14 @@ Always check:
 ```
 
 Include sections that have content. Drop empty ones. Always include Verdict, Inferred Intent, and Summary.
+
+## Gotchas
+
+- **Reviewing only the diff**: The diff is not the full picture. Read surrounding code to understand context.
+- **Phantom issues**: Don't flag things that aren't actually wrong. Verify your findings before reporting.
+- **Ignoring project conventions**: Build a rubric from loaded skills/rules, not generic coding advice.
+- **Flagging intentional trade-offs**: If context explains why something looks unusual, acknowledge it — don't flag it.
+- **Being sycophantic**: "Looks great!" when there are real issues helps nobody. Be honest.
 
 ## Constraints
 

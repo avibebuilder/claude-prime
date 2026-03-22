@@ -1,8 +1,7 @@
 ---
 name: prime-sync
-description: Sync Claude config between prime repo and target projects (push from prime or pull from target)
+description: "Syncs Claude config between prime repo and target projects. Trigger on 'sync', 'prime-sync', 'push config', 'pull config', 'update prime', 'sync claude config'. Push mode deploys to targets; pull mode imports changes back."
 argument-hint: "[<target-project-path>] (push mode only, optional in pull mode)"
-disable-model-invocation: true
 ---
 
 Ultrathink.
@@ -115,6 +114,12 @@ Version: X.X.X → written to .prime-version
 
 Push mode only: update state file (`lastSynced` timestamp + `version`).
 Pull mode only: clean up `/tmp/claude-prime-sync-*` clone directory.
+
+## Gotchas
+
+- **Syncing prime-sync itself**: This skill lives in the prime repo, not targets. Don't copy it to targets.
+- **State file confusion in pull mode**: The state file tracks targets. It's only used in push mode.
+- **Missing version tags**: Always check version compatibility between prime and target before syncing.
 
 ## Constraints
 

@@ -1,6 +1,6 @@
 ---
 name: diagnose
-description: "Trace and diagnose runtime bugs with evidence. Use when something isn't working but code looks correct, when you need to understand what's actually happening at runtime, or when investigating issues before fixing."
+description: "Investigate unexpected behavior and mysterious bugs. Use when something isn't working as expected and the cause is unknown — symptoms like: works locally but not in staging/production, inconsistent or intermittent behavior, correct code producing wrong results, operations succeeding but having no effect, environment-specific failures, duplicate executions, stale data, or any 'why is this happening?' situation. The key signal is that the user is confused about WHY something behaves the way it does, not asking you to implement a known fix. Do NOT use for feature requests, known fixes, planning, or documentation tasks."
 argument-hint: bug-description
 ---
 
@@ -75,6 +75,14 @@ Output structured diagnosis:
 ### Active Instrumentation
 - [List of files with `#region agent log` blocks still in place]
 ```
+
+## Gotchas
+
+- **Jumping to conclusions**: Form hypotheses, then TEST them. Don't guess and fix.
+- **Fixing instead of diagnosing**: Your job is to find the root cause. Don't apply fixes — that's /fix's job.
+- **Forgetting to clean up instrumentation**: Note every log/probe you add. Clean up after diagnosis.
+- **Single-hypothesis tunnel vision**: Consider at least 2-3 hypotheses before committing to one.
+- **Ignoring the reproduction environment**: The bug might be environment-specific. Note what you're testing on.
 
 ## Constraints
 

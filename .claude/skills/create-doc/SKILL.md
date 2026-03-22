@@ -1,6 +1,6 @@
 ---
 name: create-doc
-description: "Create documentation based on user needs. Use when writing guides, API docs, architecture docs, or any project documentation."
+description: "Create any written document for the project. Use when the user wants to write, draft, or document something — including guides, API docs, architecture docs, ADRs (architecture decision records), postmortems, incident reports, RFCs, runbooks, changelogs, onboarding docs, or any other prose deliverable that captures knowledge, decisions, or events."
 argument-hint: doc-topic
 ---
 
@@ -37,6 +37,13 @@ Good docs are:
 ### 4. Confirm
 - Document path
 - What was captured
+
+## Gotchas
+
+- **Duplicating existing docs**: Check for existing documentation first. Update rather than duplicate.
+- **Documenting speculation**: Only document decisions that have been made and patterns that exist.
+- **Missing the "why"**: Architecture decisions without rationale are half a document.
+- **Generic structure**: Match the doc format to the project's existing documentation style.
 
 ## Constraints
 

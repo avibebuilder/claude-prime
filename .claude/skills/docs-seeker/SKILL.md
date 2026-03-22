@@ -1,6 +1,6 @@
 ---
 name: docs-seeker
-description: "Fetch up-to-date library and framework documentation into AI context. Use when looking up docs, finding feature-specific references, or discovering documentation sources for any library, framework, or tool."
+description: "Fetch up-to-date documentation for any library, framework, API, or service into AI context. Use when the user wants to look up API references, check function signatures or required fields, find feature-specific docs, or discover documentation sources. Triggers for queries about external tools like Stripe, SQLAlchemy, Tailwind, FastAPI, etc. — any time the answer lives in official docs rather than in the project codebase."
 ---
 
 Think harder.
@@ -140,6 +140,13 @@ Topic URL (404?) → General URL (404?) → Direct site llms.txt (404?) → GitM
 - **Version-specific docs**: Search `"{library} v{version} llms.txt"` or try `/{version}/llms.txt`
 - **Multi-language docs**: Try `llms-{lang}.txt` (e.g., `llms-es.txt`), fall back to English
 - **Framework + plugins**: Focus on core first, ask user which plugins matter
+
+## Gotchas
+
+- **Stale cached URLs**: Library websites change. Verify fetched content is current.
+- **Over-fetching**: Don't dump entire documentation — extract only what's needed for the current question.
+- **Fabricating docs**: If you can't find the documentation, say so. Don't make up API signatures.
+- **Version mismatch**: Check which version the project uses before fetching latest docs.
 
 ## Constraints
 

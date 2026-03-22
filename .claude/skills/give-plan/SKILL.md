@@ -1,6 +1,6 @@
 ---
 name: give-plan
-description: "Create detailed implementation plan. Use when planning multi-file changes, architectural work, or complex features before implementation."
+description: "Create detailed implementation plan. Use when the user wants to figure out how to approach, break down, or strategize a non-trivial technical task before coding. Triggers include: planning multi-file changes, designing system architecture, migration strategies, adding major features, or any request like 'what's the approach for...', 'how should we tackle...', 'break down how to...', or 'give plan for...'. The key signal is that the user wants a structured roadmap or phased breakdown — not an explanation, not a direct implementation, not a code review."
 argument-hint: what-to-plan
 ---
 
@@ -53,6 +53,14 @@ Each phase file includes:
 - Requirements and implementation steps
 - Success criteria
 - Risks
+
+## Gotchas
+
+- **Plans too abstract**: Each phase should name specific files, functions, or components. Vague plans are useless plans.
+- **Monolithic phases**: If a phase takes more than a few hours to implement, break it down further.
+- **Ignoring dependencies**: Phases that depend on each other must be ordered correctly.
+- **Not surfacing risks**: Every plan has risks. Be honest about what could go wrong.
+- **Planning without understanding**: Always research the current state before planning changes to it.
 
 ## Constraints
 

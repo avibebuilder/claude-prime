@@ -8,50 +8,50 @@ A boilerplate toolkit that supercharges Claude Code with skills, commands, and w
 
 # Context engineering philosophy
 
-Context engineering is about curating the optimal set of tokens to maximize desired model behavior. Unlike prompt engineering which focuses on crafting perfect prompts, context engineering considers the holistic state available to the LLM at any moment.
+Context engineering is about curating the optimal set of tokens to maximize desired model behavior. Unlike prompt engineering (crafting perfect prompts), context engineering considers the holistic state available to the LLM at any moment.
 
 ## Core Principles
 
 ### 1. Context is a Finite Resource
-Models have limited "attention budgets" that degrade as context grows (context rot). The goal: **find the smallest high-signal set of tokens** that maximizes desired outcomes. Every token competes for attention—be ruthless about what enters context.
+Models have limited attention budgets that degrade as context grows (context rot). Goal: **find the smallest high-signal set of tokens** that maximizes desired outcomes. Every token competes for attention.
 
 ### 2. Right-Altitude Prompting
-Guidance should be concrete but not hardcoded—find the Goldilocks zone.
+Concrete but not hardcoded. Find the Goldilocks zone.
 
 | Too Low (Brittle) | Too Vague | Right Altitude |
 |-------------------|-----------|----------------|
 | "Use Tailwind's blue-500" | "Make it look good" | "Use project's existing color system" |
 | "Set font-size to 16px" | "Use appropriate sizing" | "Match surrounding components" |
 
-### 3. Anti-Convergence Patterns
-LLMs default to high-probability outputs. Counter this by:
-- **List what to avoid:** "Skip purple gradients—AI cliché", "Avoid Inter fonts—overused"
-- **Suggest uncommon alternatives:** "Consider X even though Y is more common"
-- **Vary examples:** Show multiple valid approaches, not just one pattern
-- **Break monotony:** Introduce controlled variation in templates and phrasing
+### 3. Avoid Railroading Claude
+Claude will generally try to stick to your instructions, and because Skills are so reusable you’ll want to be careful of being too specific in your instructions. Give Claude the information it needs, but give it the flexibility to adapt to the situation
 
-### 4. Just-in-Time Context Retrieval
-Don't load everything upfront. Maintain lightweight identifiers (file paths, URLs) and retrieve dynamically at runtime. This mirrors human cognition—discover relevant context through exploration as each interaction informs the next decision.
+### 4. Don’t State the Obvious
+Claude Code knows a lot about your codebase, and Claude knows a lot about coding, including many default opinions. If you’re publishing a skill that is primarily about knowledge, try to focus on information that pushes Claude out of its normal way of thinking.
 
-### 5. Sub-Agent Architecture
-Specialized sub-agents handle focused tasks with **clean context windows**, returning condensed summaries to the orchestrating agent. This prevents context pollution and enables long-horizon tasks. Delegate for results; keep context for decisions.
+### 5. Anti-Convergence Patterns
+LLMs default to high-probability outputs. Counter by listing what to avoid, suggesting uncommon alternatives, varying examples, and breaking monotony.
 
-### 6. Structured External Memory
-Use filesystem as extended memory—unlimited and persistent. Key practices:
-- Write persistent notes/plans outside context window
-- Keep compression reversible (preserve URLs even if dropping content)
-- Maintain todo lists to keep objectives in recent attention span
-- Preserve architectural decisions across sessions
+### 6. Just-in-Time Context Retrieval
+Don't load everything upfront. Maintain lightweight identifiers (file paths, URLs) and retrieve dynamically at runtime.
 
-### 7. Error Preservation
-**Keep failures visible in context.** Cleaning up error traces prevents the model from learning and adjusting future actions. Failed attempts inform better strategies.
+### 7. Sub-Agent Architecture
+Specialized sub-agents handle focused tasks with **clean context windows**, returning condensed summaries. Prevents context pollution, enables long-horizon tasks.
+
+### 8. Structured External Memory
+Use filesystem as extended memory. Write persistent notes/plans outside context window. Maintain todo lists in recent attention span.
+
+### 9. Error Preservation
+**Keep failures visible in context.** Failed attempts inform better strategies.
+
+
 
 ## Tool Design Principles
 
-- **Self-contained:** Each tool should be independently understandable
+- **Self-contained:** Each tool independently understandable
 - **Minimal overlap:** If engineers can't definitively choose the right tool, agents won't either
 - **Descriptive parameters:** Unambiguous input names and descriptions
-- **Token efficient:** Design to minimize wasted exploration
+- **Token efficient:** Minimize wasted exploration
 
 ---
 
@@ -63,29 +63,32 @@ Use filesystem as extended memory—unlimited and persistent. Key practices:
 
 | Type | When to create | Examples |
 |------|---------------|----------|
-| **Workflow skill** | A repeatable process that should be consistent across sessions with clear actions, tasks and instructions | `/give-plan`, `/cook`, `/fix`, `/test`, `/research` |
-| **Domain knowledge skill** | A domain has project-specific patterns the agent must follow, act as add-on knowledge for the agent when needed | Created per-project during priming or via `/touch-skill` |
+| **Workflow skill** | Repeatable process with clear actions and instructions | `/give-plan`, `/cook`, `/fix`, `/test`, `/research` |
+| **Domain knowledge skill** | Domain has project-specific patterns the agent must follow | Created per-project during priming or via `/skill-creator` |
+
 
 ## Starter Skills (`.claude/starter-skills/`)
 
-Sample domain starter skill kits shipped with the prime repo. During priming, `optimus-prime` copies relevant starters into the target project's `.claude/skills/`, where they become active skills. The `starter-skills/` folder is deleted from target projects after priming — final skills live in `.claude/skills/`.
+Template skill kits shipped with the prime repo. During priming, `optimus-prime` copies relevant starters into the target project's `.claude/skills/`, adapts generic parts, and deletes the `starter-skills/` folder.
+
+**Hub-and-spoke pattern**: Complex skills use SKILL.md as the hub (always loaded, <500 lines) that dispatches to spoke files (`references/`, `workflows/`, `templates/`) loaded on demand. This keeps the main file focused while supporting deep reference content.
 
 ## Subagents (`.claude/agents/`)
 
-Unit of execution profile when we need to isolate context or have specialized behavior. Skills can specify which agent to run in via frontmatter.
+Isolated execution profiles for specialized behavior. Skills can specify which agent to run in via frontmatter.
 
 ## Knowledge system
 
 | Layer | Location | Loading | Content |
 |-------|----------|---------|---------|
-| **Skills** | `.claude/skills/` | On-demand by agent | General framework/library knowledge |
+| **Skills** | `.claude/skills/` | On-demand by agent | Framework/library knowledge |
 | **Rules** | `.claude/rules/` | Auto-attached by path | Guardrails — wrong code if missed |
 | **Project references** | `.claude/project/` | On-demand via CLAUDE.md | Architecture, structure, domain context |
-| **Agent memory** | `.claude/agent-memory-local/` | Auto-injected per agent | Runtime-discovered knowledge from doing work |
+| **Agent memory** | `.claude/agent-memory-local/` | Auto-injected per agent | Runtime-discovered knowledge |
 
-Rule test: "With the relevant skill activated, will an agent still produce incorrect code without this?" Yes → rule. No → skill or project reference. Rules are optional — zero rules is valid.
+**Rule test**: "With the relevant skill activated, will an agent still produce incorrect code without this?" Yes -> rule. No -> skill or project reference. Rules are optional.
 
-Memory test: "Can this only be learned by working in the project, not authored upfront?" Yes → agent memory. No → skill, rule, or project reference.
+**Memory test**: "Can this only be learned by working in the project, not authored upfront?" Yes -> agent memory. No -> skill, rule, or project reference.
 
 ## Configuration scope
 
@@ -94,3 +97,4 @@ Memory test: "Can this only be learned by working in the project, not authored u
 | `CLAUDE.md` | Entry point, references `.claude/project/` for on-demand context |
 | `.claude/rules/_apply-all.md` | Universal rules for all agents (main + subagents) |
 | `.claude/hooks/orchestrator-directives.py` | Orchestrator-only behavioral rules (main agent only) |
+

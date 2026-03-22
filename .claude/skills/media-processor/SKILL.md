@@ -1,6 +1,6 @@
 ---
 name: media-processor
-description: "Process multimedia content — audio transcription, video analysis, PDF data extraction, image generation. Use for deeper image analysis when implementing from UI designs, analyzing charts for data, reading dense screenshots, or studying artworks and visual references."
+description: "Deep visual and multimedia understanding. MUST use when implementing from screenshots, UI mockups, or design images — Claude's built-in vision misses layout structure, spacing, colors, and visual hierarchy that this skill captures accurately. Also use for: analyzing artwork or aesthetic content, describing UI designs, extracting visual details from dense screenshots, transcribing audio or video, processing PDFs with complex layouts, and generating images. Trigger whenever the user attaches or references an image they want implemented, a design they want described, a screenshot they want analyzed, or any media file (audio, video, PDF) they want transcribed or extracted from."
 ---
 
 # Media Processor
@@ -245,6 +245,13 @@ Common errors and solutions:
 - **404**: File not found - ensure file uploaded and active
 - **429**: Rate limit exceeded - implement exponential backoff
 - **500**: Server error - retry with backoff
+
+## Gotchas
+
+- **Missing API key**: Requires GEMINI_API_KEY env var. Check before attempting any operation.
+- **File too large**: Gemini has size limits. Check before uploading large files.
+- **PDF page limits**: Maximum pages per request. Split large PDFs.
+- **Safety filter blocks**: Gemini may refuse some content. Report this clearly rather than retrying.
 
 ## Resources
 

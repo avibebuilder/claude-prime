@@ -1,8 +1,7 @@
 ---
 name: optimus-prime
 argument-hint: additional-context
-description: "Configure Claude for specific projects. Use this skill when setting up claude-prime in a new project, detecting project conventions and stack, deciding what skills to create, or generating CLAUDE.md entry points. Analyzes codebase and creates project-specific rules."
-disable-model-invocation: true
+description: "Bootstraps Claude Code configuration for a project. Trigger on 'prime this project', 'set up claude', 'configure claude for this repo', 'bootstrap', 'prime', 'optimus-prime'. Detects stack, copies starter skills, generates CLAUDE.md and project-specific rules."
 ---
 
 Ultrathink.
@@ -24,7 +23,7 @@ Wait for user confirmation before proceeding.
 
 1. Analyze project codebase (patterns, stack, conventions)
 2. Copy matching starter skills from `.claude/starter-skills/` to `.claude/skills/`, adapt generic parts
-3. Create skills for uncovered stacks via `/touch-skill`
+3. Create skills for uncovered stacks via `/skill-creator`
 4. Create `.claude/project/` with on-demand references
 5. Identify `.claude/rules/` path-scoped guardrails (if any — rules are optional)
 6. Generate `./CLAUDE.md` entry point
@@ -35,13 +34,13 @@ Wait for user confirmation before proceeding.
 1. **Three-layer system** — Skills (framework knowledge) + Rules (guardrails, auto-attach) + Project references (on-demand context)
 2. **Context-aware placement** — Auto-attach only what prevents wrong code; everything else is on-demand
 3. **LLM-driven analysis** — Claude explores codebase, not scripts
-4. **Leverage existing tools** — Use `/touch-skill` + `docs-seeker` for skill generation
+4. **Leverage existing tools** — Use `/skill-creator` to autonomously create and optimize skills (with eval-driven iteration), and `docs-seeker` for documentation research
 
 ## Decision Matrix
 
 | Detected | Where | Rule Test |
 |----------|-------|-----------|
-| General framework/library | Skill via `/touch-skill` | — |
+| General framework/library | Skill via `/skill-creator` | — |
 | Project-specific constraint (wrong code even with skill) | `.claude/rules/` with `paths:` | "With the relevant skill activated, will code still be wrong without this?" → Yes |
 | Architecture, structure, domain context | `.claude/project/` | — |
 
@@ -61,6 +60,13 @@ Red flags that something is NOT a rule:
 .claude/project/
 └── *.md                          # On-demand references (architecture, structure)
 ```
+
+## Gotchas
+
+- **Over-ruling existing conventions**: Don't overwrite project rules the team already has in place.
+- **Copying starters verbatim**: Starter skills need project-specific customization. Generic starters are unhelpful.
+- **Forgetting to delete starters**: After processing, starter-skills/ directory must be removed from the target.
+- **Modifying _apply-all.md in target**: These are universal rules from prime. Don't change them during priming.
 
 ## Constraints
 

@@ -35,17 +35,19 @@ Check `.claude/starter-skills/` for starters that match the detected stack. For 
 3. **Adapt** generic parts that don't match the project's specific tool choices (e.g., starter has Biome patterns but project uses ESLint → replace Biome references with ESLint generic knowledge)
 4. **Update references** — remove pruned files from overview files and SKILL.md reference tables
 
-If no starter matches the detected stack, flag it for Step 4 (create via `/touch-skill`).
+If no starter matches the detected stack, flag it for Step 4 (create via `/skill-creator`).
 
 **DO NOT skip this step. DO NOT use project rules as substitute for missing skills.**
 
 ## Step 4: Create/Extend Skills (for stacks without starters)
 
-For stacks flagged in Step 3 that had **no matching starter**, create skills from scratch:
+For stacks flagged in Step 3 that had **no matching starter**, use `/skill-creator` to autonomously create skills:
 
 ```
-/touch-skill <stack-name>
+/skill-creator <stack-name>
 ```
+
+Provide `/skill-creator`  with the stack name and any project-specific context discovered in Steps 1-2 and ask it do the creations and optimization autonomously.
 
 **Gate: All general frameworks must have skill coverage before proceeding.**
 
@@ -142,6 +144,8 @@ Copy `templates/CLAUDE.template.md` to `./CLAUDE.md`
 3. Update repository structure tree (max 15 lines)
 4. Add quick reference links (URLs only, no explanations)
 
+**Note:** Project context and skill loading rules live in `_apply-all.md` (auto-attached to all agents). Do NOT duplicate them in CLAUDE.md.
+
 **Rules are auto-attached — do NOT reference them in CLAUDE.md.**
 
 **If CLAUDE.md exceeds 100 lines, move content to `.claude/project/` files.**
@@ -168,21 +172,34 @@ If project has business logic worth documenting, use:
 
 ### Protected skills (never delete)
 
-- **Workflow:** `cook`, `fix`, `test`, `review-code`, `research`, `ask`, `discuss`, `give-plan`, `create-doc`
-- **Meta/tooling:** `optimus-prime`, `prime-sync`, `touch-skill`, `convo-analysis`
+- **Workflow:** `cook`, `fix`, `test`, `review-code`, `research`, `ask`, `discuss`, `give-plan`, `create-doc`, `diagnose`
+- **Meta/tooling:** `optimus-prime`, `prime-sync`, `skill-creator`, `self-evolve`
 - **Utilities:** `docs-seeker`, `repomix`, `media-processor`
 
 **Gate: List skills to remove and confirm with user before deleting.**
 
 ## Step 10: Verify Setup
 
-Checklist:
-- [ ] Skill coverage complete (starters + `/touch-skill`)
-- [ ] Unrelated skills removed, `.claude/starter-skills/` deleted
+### Automated verification (run all checks)
+
+1. **CLAUDE.md reference integrity** — Read `./CLAUDE.md`, extract every `.claude/project/` path referenced, verify each file exists. Flag any broken references.
+2. **Skill validity** — For each skill in `.claude/skills/`, verify its `SKILL.md` exists and contains both `name:` and `description:` in frontmatter. Flag any incomplete skills.
+3. **Skill internal references** — For each skill's `SKILL.md`, check that file paths referenced in tables/links (e.g., `./references/*.md`, `./workflows/*.md`) actually exist. Flag broken references.
+4. **Starter cleanup** — Verify `.claude/starter-skills/` directory has been deleted. Flag if it still exists.
+5. **CLAUDE.md size** — Count lines in `./CLAUDE.md`. Flag if over 200 lines (soft limit ~100, hard limit 200).
+6. **Accuracy spot-check** — Verify at least: (a) the stated tech stack matches actual dependencies in package.json/pyproject.toml/go.mod, (b) the repository structure tree matches the actual directory layout, (c) any "All X lives in Y" claims are accurate (grep to confirm).
+7. **Rule file validation** — If `.claude/rules/` contains files besides `_apply-all.md`, verify each has valid frontmatter with `description:` and `paths:` fields, and that the paths match actual project directories.
+
+Report all failures with specific details (which file, which reference, what's wrong). If all checks pass, confirm setup is complete.
+
+**Note:** For deeper config analysis and ongoing optimization, run `/self-evolve` after priming.
+
+### Manual checklist (supplementary)
+
+- [ ] Skill coverage complete (starters + `/skill-creator`)
 - [ ] `.claude/rules/` contains ONLY short guardrail files, if any (wrong code if missed)
 - [ ] `.claude/project/` contains ONLY on-demand references (architecture, structure)
-- [ ] `./CLAUDE.md` is under 100 lines
-- [ ] `./CLAUDE.md` references project folder and docs
+- [ ] CLAUDE.md actually references `.claude/project/` files (not just that the files exist, but that CLAUDE.md points to them)
 - [ ] Domain docs created (optional)
 
 ## Output Summary

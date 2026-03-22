@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy.
+description: "Creates, tests, and optimizes skills with eval-driven iteration. Trigger on 'create a skill', 'make a skill', 'improve this skill', 'optimize skill description', 'run skill evals', 'benchmark this skill', 'skill-creator', 'touch-skill'. Includes description optimization, blind comparison, and benchmark analysis."
 ---
 
 # Skill Creator
@@ -172,7 +172,7 @@ Otherwise, post to the saved channel using the saved format.
 **Persistent memory** — Skills that run repeatedly can append data to a log in `${CLAUDE_SKILL_DIR}/<skill-name>/.local-data` (persists across skill upgrades). On each run, read the log to see what changed since last time, then write the new entry after completing the task:
 ```
 ## Memory
-Append each standup to {CLAUDE_SKILL_DIR}/<skill-name>/.local-data/standups.log after posting.
+Append each standup to {CLAUDE_SKILL_DIR}/<skill-name>/local-data/standups.log after posting.
 On each run:
 - read the log to see what changed since yesterday
 - write today's entry after sending to Slack
@@ -181,6 +181,15 @@ On each run:
 **On-demand hooks** — Skills can register session-scoped hooks that only activate when the skill is called. Useful for guardrails too opinionated to run globally:
 - `/careful` — blocks `rm -rf`, `DROP TABLE`, force-push, `kubectl delete` via PreToolUse matcher on Bash
 - `/freeze` — blocks any Edit/Write outside a specific directory, useful when debugging to prevent accidentally "fixing" unrelated code
+
+**Composing skills** — Skills can depend on each other. For example, a "CSV report" skill might generate a CSV and then hand off to a "file upload" skill to push it somewhere. Skill-to-skill dependency management isn't a built-in feature, but you can reference other skills by name in your instructions and the model will invoke them if they're installed. Keep compositions loose — name the skill and describe what you expect from it, but don't assume a specific version or internal structure:
+```markdown
+## Upload step
+After generating the report, use the `file-upload` skill to upload it
+to the configured destination. If `file-upload` is not available,
+save the file locally and tell the user where it is.
+```
+Always include a fallback for when the dependency isn't installed.
 
 ### Test Cases
 
@@ -208,7 +217,7 @@ See `references/schemas.md` for the full schema (including the `assertions` fiel
 
 This section is one continuous sequence — don't stop partway through. Do NOT use `/skill-test` or any other testing skill.
 
-Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.) and within that, each test case gets a directory (`eval-0/`, `eval-1/`, etc.). Don't create all of this upfront — just create directories as you go.
+Put results in `$CLAUDE_PROJECT_DIR/.claude/tmp/<skill-name>-workspace/`. This directory is gitignored, so artifacts won't pollute commit history. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.) and within that, each test case gets a directory (`eval-0/`, `eval-1/`, etc.). Don't create all of this upfront — just create directories as you go.
 
 ### Step 1: Spawn all runs (with-skill AND baseline) in the same turn
 
@@ -262,9 +271,15 @@ When each subagent task completes, you receive a notification containing `total_
 
 This is the only opportunity to capture this data — it comes through the task notification and isn't persisted elsewhere. Process each notification as it arrives rather than trying to batch them.
 
+### Step 3.5: Ask the user about review preference
+
+Before generating the eval viewer, check context:
+- If the user explicitly requested autonomous operation (e.g., "optimize autonomously", "create this skill automatically", "run without review"), **skip the viewer and iterate automatically** — grade, analyze, improve the skill, and loop back to Step 1 without pausing for human review.
+- Otherwise, ask the user: "Would you like to review the results yourself, or should I iterate autonomously?" Remember their choice for subsequent iterations.
+
 ### Step 4: Grade, aggregate, and launch the viewer
 
-Once all runs are done:
+Once all runs are done (and the user wants to review):
 
 1. **Grade each run** — spawn a grader subagent (or grade inline) that reads `agents/grader.md` and evaluates each assertion against the outputs. Save results to `grading.json` in each run directory. The grading.json expectations array must use the fields `text`, `passed`, and `evidence` (not `name`/`met`/`details` or other variants) — the viewer depends on these exact field names. For assertions that can be checked programmatically, write and run a script rather than eyeballing it — scripts are faster, more reliable, and can be reused across iterations.
 
@@ -499,6 +514,14 @@ If you're in Cowork, the main things to know are:
 - **Updating an existing skill**: The user might be asking you to update an existing skill, not create a new one. Follow the update guidance in the claude.ai section above.
 
 ---
+
+## Gotchas
+
+- **Skipping the eval viewer**: Always generate the viewer before revising. Human feedback first, then your improvements.
+- **Overfitting to test cases**: The skill must work for many prompts, not just the 3 test cases.
+- **Wrong baseline for improvements**: When improving an existing skill, baseline against the original version, not "no skill."
+- **grading.json field names**: Must use `text`, `passed`, `evidence` — not other variants. The viewer depends on exact names.
+- **Description under-triggering**: Skills tend to trigger less often than expected. Make descriptions "pushier."
 
 ## Reference files
 

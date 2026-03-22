@@ -17,3 +17,7 @@ agent-memory-local
 
 # temp files
 tmp/
+
+# local data
+local-data/
+skills/.eval-backup/
