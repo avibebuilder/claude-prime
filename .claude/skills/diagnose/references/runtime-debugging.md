@@ -17,7 +17,7 @@ Hypothesis-driven runtime instrumentation for bugs that static analysis cannot r
 | Start | `node .claude/skills/diagnose/scripts/diagnose-server.js [sessionId]` (run in background) |
 | Host | `127.0.0.1:6143` |
 | Endpoint | `POST /ingest/{sessionId}` |
-| Log file | `.claude/tmp/diagnose-{sessionId}.log` (JSONL format) |
+| Log file | `tmp/diagnose-{sessionId}.log` (JSONL format) |
 | Stop | Kill the background process after debugging completes |
 
 ## Log Schema
@@ -101,7 +101,7 @@ except Exception:
 2. **Identify evidence** -- for each hypothesis, determine what runtime data would prove or disprove it
 3. **Instrument** -- insert log points tagged with `hypothesisId` at relevant code paths
 4. **Reproduce** -- ask the user to trigger the bug
-5. **Read logs** -- parse `.claude/tmp/diagnose-{sessionId}.log`
+5. **Read logs** -- parse `tmp/diagnose-{sessionId}.log`
 6. **Analyze** -- determine which hypotheses are supported or eliminated by the evidence
 7. **Fix** -- apply the fix targeting the confirmed root cause
 
@@ -111,4 +111,4 @@ After the fix is verified:
 
 1. Search for all `#region agent log` / `#endregion` blocks (and Python `# region agent log` / `# endregion`) and remove them
 2. Stop the debug server background process
-3. Delete the log file at `.claude/tmp/diagnose-{sessionId}.log`
+3. Delete the log file at `tmp/diagnose-{sessionId}.log`

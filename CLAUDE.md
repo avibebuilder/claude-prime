@@ -73,28 +73,27 @@ Template skill kits shipped with the prime repo. During priming, `optimus-prime`
 
 **Hub-and-spoke pattern**: Complex skills use SKILL.md as the hub (always loaded, <500 lines) that dispatches to spoke files (`references/`, `workflows/`, `templates/`) loaded on demand. This keeps the main file focused while supporting deep reference content.
 
-## Subagents (`.claude/agents/`)
-
-Isolated execution profiles for specialized behavior. Skills can specify which agent to run in via frontmatter.
-
 ## Knowledge system
 
 | Layer | Location | Loading | Content |
 |-------|----------|---------|---------|
-| **Skills** | `.claude/skills/` | On-demand by agent | Framework/library knowledge |
+| **CLAUDE.md** | `CLAUDE.md` | Always | Entry point — project identity, commands, stack, on-demand reference pointers |
+| **Skills** | `.claude/skills/` | On-demand by agent | Framework/library knowledge, workflows |
 | **Rules** | `.claude/rules/` | Auto-attached by path | Guardrails — wrong code if missed |
-| **Project references** | `.claude/project/` | On-demand via CLAUDE.md | Architecture, structure, domain context |
 | **Agent memory** | `.claude/agent-memory-local/` | Auto-injected per agent | Runtime-discovered knowledge |
 
-**Rule test**: "With the relevant skill activated, will an agent still produce incorrect code without this?" Yes -> rule. No -> skill or project reference. Rules are optional.
+**Rule test**: "With the relevant skill activated, will an agent still produce incorrect code without this?" Yes -> rule. No -> skill. Rules are optional.
 
-**Memory test**: "Can this only be learned by working in the project, not authored upfront?" Yes -> agent memory. No -> skill, rule, or project reference.
+**Memory test**: "Can this only be learned by working in the project, not authored upfront?" Yes -> agent memory. No -> skill or rule.
+
+On-demand references can live anywhere — just point to them from CLAUDE.md. Use `docs/` for human documentation. For complex projects where human docs are too verbose for agents, `.claude/project/` can optionally hold agent-optimized references (dense, scannable format).
 
 ## Configuration scope
 
 | Put here | When |
 |----------|------|
-| `CLAUDE.md` | Entry point, references `.claude/project/` for on-demand context |
+| `CLAUDE.md` | Team-shared instructions checked into source control — architecture, coding standards, common workflows |
+| `CLAUDE.local.md` | Personal preferences for this project (gitignored) — your role, sandbox URLs, preferred test data, workflow quirks |
 | `.claude/rules/_apply-all.md` | Universal rules for all agents (main + subagents) |
 | `.claude/hooks/orchestrator-directives.py` | Orchestrator-only behavioral rules (main agent only) |
 

@@ -1,34 +1,8 @@
 # Project Analysis Checklist
 
-## Stack Detection
+Non-obvious things to look for during codebase analysis. Skip the obvious (stack detection, folder scanning) — Claude already does that well.
 
-| Category | Look For | Files to Check |
-|----------|----------|----------------|
-| **Frontend** | React, Vue, Angular, Svelte | `package.json`, `*.tsx`, `*.vue` |
-| **Backend** | Express, NestJS, FastAPI, Django | `package.json`, `requirements.txt`, `main.ts` |
-| **Database** | Prisma, TypeORM, SQLAlchemy, Drizzle | `schema.prisma`, `ormconfig.ts`, `alembic/` |
-| **Styling** | Tailwind, CSS Modules, Styled Components | `tailwind.config.*`, `*.module.css` |
-| **Testing** | Jest, Vitest, Pytest | `jest.config.*`, `vitest.config.*`, `pytest.ini` |
-
-## Convention Detection
-
-### Code Style
-- ESLint/Prettier config → coding standards
-- TypeScript strict mode → type conventions
-- Import ordering → module organization
-
-### Architecture Patterns
-- Folder structure → feature-based vs layer-based
-- State management → Redux, Zustand, Context
-- API patterns → REST, GraphQL, tRPC
-
-### Project-Specific Rules
-- Naming conventions (files, components, functions)
-- Component patterns (client vs server, HOCs, hooks)
-- Error handling approach
-- Logging standards
-
-## Placement Decision: Rule vs Reference
+## Placement Decision: Rule vs CLAUDE.md vs Docs
 
 For each detected convention, apply the **rule test**:
 
@@ -37,24 +11,20 @@ For each detected convention, apply the **rule test**:
 | Answer | Where | Example |
 |--------|-------|---------|
 | **Yes** → Guardrail | `.claude/rules/<name>.md` with `paths:` | "Must use `cn()` not `clsx()`", "API responses use `ResponseWrapper`" |
-| **No** → Guidance | `.claude/project/*.md` | "Feature-based folder structure", "Auth uses JWT with refresh" |
+| **No** → Always-on context | `CLAUDE.md` (brief), `docs/` (human docs), or `.claude/project/` (agent-optimized, optional) — referenced from CLAUDE.md | "Feature-based folder structure", "Auth uses JWT with refresh" |
 
-**Keep rule files short.** If it needs paragraphs of explanation, it's guidance, not a guardrail.
+## Red Flags (likely guardrails)
 
-## Starter Skills Matching
-
-After detecting the stack, browse `.claude/starter-skills/` for relevant domain starter skills. Copy matching starters to `.claude/skills/` and adapt tooling-specific parts if needed (e.g., swap Biome references for ESLint). For stacks without a matching starter, create a new skill via `/skill-creator`.
-
-## Questions to Answer
-
-1. **What stack is this?** → Browse `.claude/starter-skills/` for matching starters, use `/skill-creator` for uncovered stacks
-2. **What hard constraints exist?** → Guardrails → `.claude/rules/` (auto-attached)
-3. **What architectural context is useful?** → References → `.claude/project/` (on-demand)
-
-## Red Flags (Likely guardrails — `.claude/rules/`)
+These patterns often trip up agents even with the right skill loaded — strong candidates for rules:
 
 - "We don't use TypeScript strict mode"
 - "All components are client-side"
 - "We use raw SQL, not ORM"
 - "Custom authentication system"
 - "Monorepo with special conventions"
+
+## Questions Worth Answering
+
+1. **What hard constraints exist?** → Things that cause wrong code if missed → `.claude/rules/`
+2. **What always-on context does the agent need?** → `CLAUDE.md`
+3. **What existing docs can agents reference on-demand?** → Point from CLAUDE.md

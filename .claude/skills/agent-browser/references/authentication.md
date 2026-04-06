@@ -61,10 +61,10 @@ agent-browser wait --url "**/app.example.com/dashboard**" --timeout 120000
 
 ## Post-Auth: Offer to Save for Reuse
 
-After **either path** succeeds, check if credentials/state are already stored (`agent-browser auth list`, `ls .claude/tmp/auth-state-*.json`). If not, ask the user if they want to save for next time:
+After **either path** succeeds, check if credentials/state are already stored (`agent-browser auth list`, `ls tmp/auth-state-*.json`). If not, ask the user if they want to save for next time:
 
 - **Non-sensitive** → offer Auth Vault: `echo "pass" | agent-browser auth save <profile> --url <url> --username <user> --password-stdin`
-- **Sensitive** → offer State Persistence: `agent-browser state save .claude/tmp/auth-state-<name>.json` (saves session only, not credentials)
+- **Sensitive** → offer State Persistence: `agent-browser state save tmp/auth-state-<name>.json` (saves session only, not credentials)
 
 Don't auto-save without asking. Don't re-ask if already stored for this site.
 
@@ -133,7 +133,7 @@ agent-browser get url  # Should be dashboard, not login
 
 ## Saving Authentication State
 
-After logging in, save state to `.claude/tmp/` (gitignored, project-scoped):
+After logging in, save state to `tmp/` (gitignored, project-scoped):
 
 ```bash
 # Login first (see above)
@@ -145,7 +145,7 @@ agent-browser click @e3
 agent-browser wait --url "**/dashboard"
 
 # Save authenticated state
-agent-browser state save .claude/tmp/auth-state-myapp.json
+agent-browser state save tmp/auth-state-myapp.json
 ```
 
 **Naming convention**: `auth-state-{name}.json` where `{name}` is a short identifier (domain, app name).
@@ -156,10 +156,10 @@ Skip login by loading saved state:
 
 ```bash
 # Discover saved states for current project
-ls .claude/tmp/auth-state-*.json
+ls tmp/auth-state-*.json
 
 # Load saved auth state
-agent-browser state load .claude/tmp/auth-state-myapp.json
+agent-browser state load tmp/auth-state-myapp.json
 
 # Navigate directly to protected page
 agent-browser open https://app.example.com/dashboard
@@ -190,7 +190,7 @@ agent-browser click @e4  # Sign in
 
 # Wait for redirect back
 agent-browser wait --url "**/app.example.com**"
-agent-browser state save .claude/tmp/auth-state-google-oauth.json
+agent-browser state save tmp/auth-state-google-oauth.json
 ```
 
 ## Two-Factor Authentication
@@ -210,7 +210,7 @@ echo "Complete 2FA in the browser window..."
 agent-browser wait --url "**/dashboard" --timeout 120000
 
 # Save state after 2FA
-agent-browser state save .claude/tmp/auth-state-2fa.json
+agent-browser state save tmp/auth-state-2fa.json
 ```
 
 ## HTTP Basic Auth

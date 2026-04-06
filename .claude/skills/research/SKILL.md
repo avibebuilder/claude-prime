@@ -1,7 +1,5 @@
 ---
 name: research
-context: fork
-agent: the-mechanic
 description: "Gather facts and context from codebase, docs, and web. Use when exploring, investigating, tracing, or looking into something — whether that's understanding how existing code works, evaluating options and alternatives, mapping dependency chains, finding implementations, or researching before decisions. Triggers: 'explore how X works', 'look into', 'investigate', 'trace through', 'what are the options', 'research X', 'how does our codebase handle X'. Do NOT use for implementation, running tests, code review, or explaining general concepts."
 argument-hint: what-to-research
 ---

@@ -6,7 +6,7 @@ This document defines the JSON schemas used by skill-creator.
 
 ## evals.json
 
-Defines the evals for a skill. Located at `evals/evals.json` within the skill directory.
+Defines the evals for a skill. Located at `tmp/<skill-name>-workspace/evals.json`.
 
 ```json
 {
@@ -16,7 +16,7 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
       "id": 1,
       "prompt": "User's example prompt",
       "expected_output": "Description of expected result",
-      "files": ["evals/files/sample1.pdf"],
+      "files": ["path/to/sample1.pdf"],
       "expectations": [
         "The output includes X",
         "The skill used script Y"
@@ -31,7 +31,7 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
 - `evals[].id`: Unique integer identifier
 - `evals[].prompt`: The task to execute
 - `evals[].expected_output`: Human-readable description of success
-- `evals[].files`: Optional list of input file paths (relative to skill root)
+- `evals[].files`: Optional list of input file paths (absolute or relative to workspace)
 - `evals[].expectations`: List of verifiable statements
 
 ---
@@ -251,6 +251,13 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
       "expectations": [
         {"text": "...", "passed": true, "evidence": "..."}
       ],
+      "claims": [
+        {"claim": "The form has 12 fields", "type": "factual", "verified": true, "evidence": "..."}
+      ],
+      "eval_feedback": {
+        "suggestions": [{"assertion": "...", "reason": "..."}],
+        "overall": "Assertions check presence but not correctness."
+      },
       "notes": [
         "Used 2023 data, may be stale",
         "Fell back to text overlay for non-fillable fields"
@@ -260,14 +267,14 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
 
   "run_summary": {
     "with_skill": {
-      "pass_rate": {"mean": 0.85, "stddev": 0.05, "min": 0.80, "max": 0.90},
-      "time_seconds": {"mean": 45.0, "stddev": 12.0, "min": 32.0, "max": 58.0},
-      "tokens": {"mean": 3800, "stddev": 400, "min": 3200, "max": 4100}
+      "pass_rate": {"mean": 0.85, "stddev": 0.05, "min": 0.80, "max": 0.90, "n": 6},
+      "time_seconds": {"mean": 45.0, "stddev": 12.0, "min": 32.0, "max": 58.0, "n": 6},
+      "tokens": {"mean": 3800, "stddev": 400, "min": 3200, "max": 4100, "n": 6}
     },
     "without_skill": {
-      "pass_rate": {"mean": 0.35, "stddev": 0.08, "min": 0.28, "max": 0.45},
-      "time_seconds": {"mean": 32.0, "stddev": 8.0, "min": 24.0, "max": 42.0},
-      "tokens": {"mean": 2100, "stddev": 300, "min": 1800, "max": 2500}
+      "pass_rate": {"mean": 0.35, "stddev": 0.08, "min": 0.28, "max": 0.45, "n": 6},
+      "time_seconds": {"mean": 32.0, "stddev": 8.0, "min": 24.0, "max": 42.0, "n": 6},
+      "tokens": {"mean": 2100, "stddev": 300, "min": 1800, "max": 2500, "n": 6}
     },
     "delta": {
       "pass_rate": "+0.50",
@@ -293,16 +300,81 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
   - `runs_per_configuration`: Number of runs per config (e.g. 3)
 - `runs[]`: Individual run results
   - `eval_id`: Numeric eval identifier
-  - `eval_name`: Human-readable eval name (used as section header in the viewer)
-  - `configuration`: Must be `"with_skill"` or `"without_skill"` (the viewer uses this exact string for grouping and color coding)
+  - `eval_name`: Human-readable eval name (from eval_metadata.json, used as section header in the viewer)
+  - `configuration`: Must be `"with_skill"` or `"without_skill"` (the viewer uses this exact string for grouping and color coding). Also accepted: `"new_skill"` / `"old_skill"` for improvement mode.
   - `run_number`: Integer run number (1, 2, 3...)
   - `result`: Nested object with `pass_rate`, `passed`, `total`, `time_seconds`, `tokens`, `errors`
+    - `tokens`: Integer token count from `timing.json`'s `total_tokens`, or `null` if not available. Never falls back to character counts.
+  - `claims`: (optional) Verified claims extracted by the grader — passed through from grading.json
+  - `eval_feedback`: (optional) Grader's critique of the eval assertions — present only when the grader identified issues worth raising
 - `run_summary`: Statistical aggregates per configuration
-  - `with_skill` / `without_skill`: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
-  - `delta`: Difference strings like `"+0.50"`, `"+13.0"`, `"+1700"`
+  - `with_skill` / `without_skill`: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean`, `stddev`, `min`, `max`, and `n` (sample count) fields. `tokens` is `null` if no runs had token data. When `tokens.n` is less than `pass_rate.n`, token stats are computed from a partial sample.
+  - `delta`: Difference strings like `"+0.50"`, `"+13.0"`, `"+1700"`. Token delta is `"N/A"` when token data is unavailable.
 - `notes`: Freeform observations from the analyzer
 
 **Important:** The viewer reads these field names exactly. Using `config` instead of `configuration`, or putting `pass_rate` at the top level of a run instead of nested under `result`, will cause the viewer to show empty/zero values. Always reference this schema when generating benchmark.json manually.
+
+---
+
+## judge-output.json
+
+Output from the judge agent. Located at `<workspace>/judge-output.json`.
+
+```json
+{
+  "decision": "stop",
+  "quality_score": 8.0,
+  "reasoning": "Pass rate climbed from 62% to 95% across three iterations. Remaining failures are edge cases with no clear fix path.",
+  "remaining_opportunities": ["Tighten description for ambiguous trigger queries"],
+  "risk_of_continuing": "Further iterations risk overfitting to the three test cases.",
+  "eval_confidence": "high",
+  "signals": [
+    {
+      "label": "Improvement this round",
+      "value": "Slowing down (+3% vs +41% last round)",
+      "verdict": "negative",
+      "weight": "Diminishing returns suggest further iterations unlikely to help."
+    },
+    {
+      "label": "How reliable are these results",
+      "value": "Based on real agent runs",
+      "verdict": "positive",
+      "weight": "High confidence in pass rates — not analytical."
+    },
+    {
+      "label": "Checks that always pass",
+      "value": "2 of 8 checks passed in every round (may inflate score)",
+      "verdict": "neutral",
+      "weight": "Non-discriminating checks inflate the score slightly."
+    }
+  ]
+}
+```
+
+**Fields:**
+- `decision`: `"continue"` or `"stop"`
+- `quality_score`: 0–10 holistic rating
+- `reasoning`: Plain-English explanation citing specific evidence
+- `remaining_opportunities`: List of concrete improvements still possible
+- `risk_of_continuing`: What could go wrong with another iteration
+- `eval_confidence`: `"high"` (real runs), `"medium"` (mixed), or `"low"` (analytical only)
+- `signals`: 2–4 signals ordered by importance to the decision
+  - `label`: Plain words, no jargon (e.g., "Improvement this round" not "Convergence Velocity")
+  - `value`: Human-readable string (e.g., "Slowing down (+3%)" not "0.03")
+  - `verdict`: `"positive"`, `"negative"`, or `"neutral"` — drives the colored dot in the report
+  - `weight`: One sentence explaining why this signal mattered to the decision
+
+---
+
+## skill_changes.json
+
+Located at `<workspace>/iteration-N/skill_changes.json`. Written after each skill improvement to record what changed. The report uses this for the "How it improved" changelog.
+
+```json
+["Added error handling section", "Removed redundant examples", "Bundled helper script"]
+```
+
+A simple JSON array of human-readable strings. For iteration 1, write `["Initial version"]`.
 
 ---
 

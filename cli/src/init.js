@@ -15,6 +15,7 @@ const {
 const { banner } = require("./utils");
 
 const GITIGNORE_ENTRIES = [
+  "tmp/",
   "repomix-output.xml",
   "plans/**/*",
   "!plans/templates/*",
@@ -26,6 +27,7 @@ const GITIGNORE_ENTRIES = [
   "docs/test-cases/*",
   "claude-prime-*.zip",
   ".mcp.json",
+  "CLAUDE.local.md",
 ];
 
 function handleCancel(value) {

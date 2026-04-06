@@ -158,8 +158,7 @@ Claude Prime configures these for your project:
 
 | Layer | Location | When Loaded | Purpose |
 |---|---|---|---|
-| **CLAUDE.md** | `CLAUDE.md` | Always | Entry point — project overview, references to project refs |
-| **Project refs** | `.claude/project/` | On-demand via CLAUDE.md | Your project's architecture, structure, and domain context |
+| **CLAUDE.md** | `CLAUDE.md` | Always | Always-on context — project identity, commands, stack, on-demand reference pointers |
 | **Skills** | `.claude/skills/` | On-demand per task | How to do things — framework patterns, workflow steps, library conventions |
 | **Rules** | `.claude/rules/` | Auto-attached by file path | Guardrails that prevent wrong code — skip these and output breaks |
 | **Agent memory** | `.claude/agent-memory-local/` | Auto-injected per agent | Things you can only learn by doing — failed approaches, environment quirks, hidden gotchas |
@@ -176,9 +175,9 @@ Claude Prime configures these for your project:
 
 We deliberately chose **many skills + one worker agent** over multiple specialized agents.
 
-Why not have a `react-agent`, `python-agent`, `docker-agent`? Because then you (and Claude) have to decide which agent to use — and that decision is often wrong or ambiguous. Instead, we have one agent (`the-mechanic`) that dynamically picks up whatever skills are relevant to the task. Skills carry the knowledge, the agent provides the execution. Same worker, different expertise depending on the job.
+Why not have a `react-agent`, `python-agent`, `docker-agent`? Because then you (and Claude) have to decide which agent to use — and that decision is often wrong or ambiguous. Instead, the orchestrator selects the right skill and delegates to the built-in general-purpose agent. Skills carry the knowledge, the agent provides the execution. Same worker, different expertise depending on the job.
 
-Why not just use the built-in general-purpose agent? Because it doesn't know to look for and activate skills, and it has no memory. `the-mechanic` is wired to discover relevant skills before executing any task and has `memory: local` — so it accumulates runtime knowledge across sessions.
+No custom agent definitions needed — Claude Code's built-in general-purpose agent combined with `_apply-all.md` rules is enough. When a skill needs specialized subagent roles (e.g., a judge, comparator, or grader), it defines them locally in its own `agents/` subdirectory.
 
 ### Orchestrator Hooks
 

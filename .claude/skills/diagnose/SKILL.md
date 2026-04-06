@@ -37,7 +37,7 @@ Check conversation context and skip completed steps.
 **GATE**: User confirms reproduction.
 
 ### 5. Gather & Analyze
-- Read debug logs from `.claude/tmp/diagnose-{sessionId}.log`
+- Read debug logs from `tmp/diagnose-{sessionId}.log`
 - Correlate log entries with hypotheses
 - Eliminate or confirm causes based on evidence
 

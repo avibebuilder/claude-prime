@@ -41,7 +41,3 @@ SESSION N ends
 ## Data
 
 SQLite at `.claude/local-data/self-improve.db`. Auto-expires after 9 days.
-
-## Deep Dive
-
-See [docs/202603250023-self-improve-deep-dive.md](/docs/202603250023-self-improve-deep-dive.md) for design decisions, scoring system details, and architecture rationale.

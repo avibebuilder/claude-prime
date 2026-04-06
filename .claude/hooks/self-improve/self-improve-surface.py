@@ -4,13 +4,12 @@ Stage 3: Surface Proposals — runs on SessionStart, rate-limited.
 
 Checks SQLite for pending proposals and surfaces them via:
 - companyAnnouncements in settings.local.json (user-facing UI message)
-- stdout (structured context for Claude to act on when user says 'ok')
+- stdout (structured context for Claude to act on when user says 'self-evolve' or similar)
 
 Uses exponential backoff: shows after 1, 3, 6, 9, 12 sessions.
 Max 5 attempts per cycle. 4-hour threshold resets the cycle.
 """
 
-import json
 import os
 import subprocess
 import sys
@@ -126,34 +125,21 @@ def _surface_proposals(conn, rows, dismiss_count: int, project_root: str) -> Non
     announcement = (
         f"{ANNOUNCEMENT_MARKER} I have {n} self-improvement proposal"
         f"{'s' if n != 1 else ''} from recent sessions! "
-        f'Say "ok" to review.'
+        f'Say "/self-evolve" or similar to review.'
     )
     set_announcement(project_root, announcement)
-
-    # --- Print structured context for Claude (no user-facing hint) ---
-    proposals = [
-        {
-            "id": r["id"],
-            "theme": r["theme"],
-            "content": r["content"],
-            "rationale": r["rationale"],
-        }
-        for r in rows
-    ]
 
     print(
         "<self_improve_surface>"
         f"You have {n} pending self-improvement proposal(s). "
-        "The user has been notified via a company announcement in the UI. "
-        "When the user says 'ok' or wants to review proposals, show each one with its rationale. "
-        "For each proposal, ask the user to approve or reject. "
-        "If approved, invoke /self-evolve wire to intelligently place the change — the skill handles placement logic, consolidation, and resolving. "
-        "If rejected, run: python3 $CLAUDE_PROJECT_DIR/.claude/hooks/self-improve/self_improve_db.py resolve <id> rejected"
-        f"\n<pending_proposals>{json.dumps(proposals, indent=2)}</pending_proposals>"
+        "The user may not see a UI banner (e.g. VS Code extension). "
+        "At the END of your first response (after addressing whatever the user asked), "
+        "briefly suggest: open a new tab/conversation and run /self-evolve to review pending proposals. "
+        "Keep it to one short sentence — do not interrupt their workflow or front-load it."
         "</self_improve_surface>"
     )
 
-    # --- Update counters ---
+    # --- Update counters --- 
     conn.execute(
         "INSERT OR REPLACE INTO config (key, value) VALUES ('session_count', '0')"
     )

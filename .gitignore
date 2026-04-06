@@ -46,6 +46,7 @@ __pycache__/
 .pytest_cache/
 .venv
 
+tmp/
 repomix-output.xml
 plans/**/*
 !plans/templates/*

@@ -35,6 +35,7 @@ echo -e "${YELLOW}[1/4] Checking .gitignore...${NC}"
 
 GITIGNORE_FILE="$PROJECT_ROOT/.gitignore"
 GITIGNORE_ENTRIES=(
+    "tmp/"
     "repomix-output.xml"
     "plans/**/*"
     "!plans/templates/*"
@@ -46,6 +47,7 @@ GITIGNORE_ENTRIES=(
     "docs/test-cases/*"
     "claude-prime-*.zip",
     ".mcp.json"
+    "CLAUDE.local.md"
 )
 
 if [ -f "$GITIGNORE_FILE" ]; then

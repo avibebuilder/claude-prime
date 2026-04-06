@@ -1,8 +1,9 @@
 # Available Skill Resources
 
 Curated registry of external skill collections for discovering existing skills before creating new ones.
+MUST download the entry point to know what's available — do not rely on secondhand summaries or lists, it's just some highlights and may be outdated.
 
-**Note**: Entry point content is large. When fetching via WebFetch, search for your target domain in the raw content — do not summarize.
+**IMPORTANT**: Entry point content is large, prefer downloading it to /tmp, if you use WebFetch, MUST provide the prompt to search for your target domain in the raw content and return with real according URLs to follow up — do not summarize as it will lead to loss of information.
 
 ## Skill Repositories
 

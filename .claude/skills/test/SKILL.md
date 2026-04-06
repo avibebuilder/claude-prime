@@ -1,7 +1,6 @@
 ---
 name: test
 context: fork
-agent: the-mechanic
 description: "Run test suites and report pass/fail results. Use when the user asks to execute tests, check whether tests pass, or verify code changes didn't break anything. Triggers: 'run tests', 'check if tests pass', 'verify nothing broke', 'run e2e tests', 'test the endpoints', 'run tests/unit/test_foo.py', 'let me know the results'. This skill executes test commands and reports output — it does NOT write tests, fix tests, explain test code, plan tests, or research testing practices. If the request is about learning, writing, or researching testing rather than executing and reporting, do not use this skill."
 argument-hint: what-to-test-and-outcome
 ---
@@ -26,7 +25,7 @@ If no argument, auto-determine from recent changes (`git diff`, `git status`) an
 
 ### 2. Detect Framework & Test Commands
 
-Detect test framework from project config and look for existing test scripts (`Makefile`, `justfile`, `package.json` scripts, `scripts/` directory, `.claude/project/`, etc.). Use project-defined commands when available.
+Detect test framework from project config and look for existing test scripts (`Makefile`, `justfile`, `package.json` scripts, `scripts/` directory, `CLAUDE.md`, etc.). Use project-defined commands when available.
 
 ### 3. Run Tests
 - Execute appropriate test command

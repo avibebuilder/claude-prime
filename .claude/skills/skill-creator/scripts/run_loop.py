@@ -254,7 +254,8 @@ def main():
     parser.add_argument("--holdout", type=float, default=0.4, help="Fraction of eval set to hold out for testing (0 to disable)")
     parser.add_argument("--model", required=True, help="Model for improvement")
     parser.add_argument("--verbose", action="store_true", help="Print progress to stderr")
-    parser.add_argument("--report", default="auto", help="Generate HTML report at this path (default: 'auto' for temp file, 'none' to disable)")
+    parser.add_argument("--report", default="none", help="Generate HTML report at this path (default: 'none' to disable, 'auto' for a temp file)")
+    parser.add_argument("--output", "-o", default=None, help="Write JSON results to this file instead of stdout")
     parser.add_argument("--results-dir", default=None, help="Save all outputs (results.json, report.html, log.txt) to a timestamped subdirectory here")
     args = parser.parse_args()
 
@@ -308,7 +309,11 @@ def main():
 
     # Save JSON output
     json_output = json.dumps(output, indent=2)
-    print(json_output)
+    if args.output:
+        Path(args.output).write_text(json_output)
+        print(f"Results written to: {args.output}", file=sys.stderr)
+    else:
+        print(json_output)
     if results_dir:
         (results_dir / "results.json").write_text(json_output)
 

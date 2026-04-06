@@ -14,7 +14,7 @@ import shutil
 import subprocess
 import sys
 import time
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from scripts.utils import parse_skill_md
@@ -240,7 +240,7 @@ def run_eval(
         # --- Run all queries in parallel ---
         results = []
 
-        with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        with ThreadPoolExecutor(max_workers=num_workers) as executor:
             future_to_info = {}
             for item in eval_set:
                 for run_idx in range(runs_per_query):
