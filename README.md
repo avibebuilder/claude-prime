@@ -168,7 +168,7 @@ Claude Prime configures these for your project:
 | Type | What it is | Examples |
 |---|---|---|
 | **Workflow** | Turns multi-step tasks into consistent, repeatable workflows | research, review-code, test, cook, fix, ask, discuss, give-plan, create-doc |
-| **Capability** | Gives the agent new abilities it doesn't have by default | frontend-design, media-processor, docs-seeker, repomix, agent-browser |
+| **Capability** | Gives the agent new abilities it doesn't have by default | frontend-design, media-processor, docs-seeker, agent-browser |
 | **Domain** | Packages specialized knowledge the agent loads on demand | frontend-development, backend-fastapi-python, docker, monorepo |
 
 ### Skills + Worker Agent = Experts

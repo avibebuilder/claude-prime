@@ -5,8 +5,6 @@ description: "Use when the user wants to work on a Claude Code skill file (SKILL
 
 # Skill Creator
 
-A skill for creating new skills and iteratively improving them.
-
 Default operating mode: autonomous — create or update the skill, run evals, improve it, optimize the description, and return with a final report. Only pause for human review if the user explicitly requests it or you hit an ambiguity that can't be resolved from the evidence alone.
 
 At a high level, the process of creating a skill goes like this:
@@ -21,17 +19,7 @@ At a high level, the process of creating a skill goes like this:
 - Repeat until quality thresholds are met or the user is satisfied
 - Optimize the description for triggering accuracy parallel
 
-Your job when using this skill is to figure out where the user is in this process and then jump in and help them progress through these stages. Route based on what they need:
-
-| Request | What to run |
-|---------|------------|
-| **Create new skill** ("make a skill for X") | Full loop: draft → eval with baseline (for iteration 1) + desc optimization (parallel) → assertion gate → improve → report |
-| **Improve skill body** ("improve this skill") | Read + snapshot → eval + desc optimization (parallel) → improve → report |
-| **Optimize description only** ("fix the triggering") | Skip eval loop, run description optimization only → report |
-| **Run evals only** ("benchmark this skill") | Read existing skill → run evals + benchmark → report |
-| **Test a draft** ("here's my skill, test it") | Eval + desc optimization (parallel) → improve → report + ship assessment |
-
-Of course, you should always be flexible and if the user is like "I don't need to run a bunch of evaluations, just vibe with me", you can do that instead.
+Figure out where the user is in this process and then jump in and help them progress through these stages. Route based on what they need. Of course, you should always be flexible and if the user is like "I don't need to run a bunch of evaluations, just vibe with me", you can do that instead.
 
 **Workspace convention**: All eval artifacts go in `tmp/<skill-name>-workspace/` under the project root (the directory containing `.claude/`). This directory is gitignored. Within the workspace, organize by iteration (`iteration-1/`, `iteration-2/`, etc.).
 
@@ -122,12 +110,6 @@ cloud-deploy/
     └── azure.md
 ```
 Claude reads only the relevant reference file.
-
-#### Content Quality
-
-A skill's value comes from teaching Claude things it wouldn't know or would get wrong without the skill. Every section, paragraph, and code block should pass this test: **"Would Claude produce meaningfully worse output without this?"** If no — if Claude's training or the source code already covers it — cut it. Don't fill skills with generic library patterns or code blocks demonstrating standard usage. Focus on project-specific decisions, constraints, gotchas, and decision frameworks ("when to use X vs Y").
-
-Before proceeding to test cases, review your draft: does each section pass the value-add test? Does each code block teach something project-specific? Is the skill more guidance than code?
 
 #### Principle of Lack of Surprise
 
@@ -221,7 +203,13 @@ Task: [eval prompt]
 Input files: [eval files if any, or "none"]
 Save outputs to: [workspace path]/iteration-[N]/[eval-name]/with_skill/outputs/
 Outputs to save: [what the user cares about — e.g., "the .docx file", "the final CSV"]
+
+Also required: write `outputs/transcript.md` — one line per tool call, in order, as you go: `- <Tool> | <key args> | <ok|error>`. Graders use this to verify process assertions. No transcript = failed process assertions.
+
+Do NOT revert or clean up the project after completing the task. The orchestrator handles cleanup after grading.
 ```
+
+**Project cleanup timing:** Executors must not revert changes — doing so destroys evidence before graders can inspect it (new files, diffs, task artifacts). The orchestrator is responsible for restoring the project state **after** all graders have finished. This sequence matters: grade first, clean second.
 
 **Baseline runs (new skills only)** — When creating a new skill, the first iteration MUST include baseline runs alongside with-skill runs. Run the same prompts without the skill loaded and save outputs to `without_skill/outputs/`. This measures whether the skill actually adds value over bare Claude. For subsequent iterations, baseline from iteration 1 still applies — no need to rerun.
 
@@ -264,7 +252,17 @@ This is the only opportunity to capture this data — it comes through the task 
 
 Once all runs are done:
 
-1. **Grade each run** — spawn grader subagents in parallel (one per eval case), or grade inline for simple expectations. Each reads `agents/grader.md` and evaluates expectations against the outputs. Save results to `grading.json` in each run directory. The grading.json expectations array must use the fields `text`, `passed`, and `evidence` — the viewer depends on these exact field names. For expectations that can be checked programmatically, write and run a script rather than eyeballing it.
+1. **Grade each run** — spawn grader subagents in parallel (one per eval case), or grade inline for simple expectations. Each reads `agents/grader.md` and evaluates expectations against the outputs. When spawning, pass these inputs explicitly:
+
+   ```
+   Read agents/grader.md at <skill-creator-path>/agents/grader.md — it contains your role.
+
+   transcript_path: <run>/outputs/transcript.md
+   outputs_dir: <run>/outputs/
+   expectations: [...]
+   ```
+
+   Save results to `grading.json` in each run directory. The grading.json expectations array must use the fields `text`, `passed`, and `evidence` — the viewer depends on these exact field names. For expectations that can be checked programmatically, write and run a script rather than eyeballing it.
 
 2. **Aggregate into benchmark** — run the aggregation script from the skill-creator directory:
    ```bash
@@ -274,7 +272,7 @@ Once all runs are done:
 
 3. **Do an analyst pass** — read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` for what to look for — non-discriminating expectations, high-variance evals, time/token tradeoffs, and repeated failure modes that should become skill instructions or bundled scripts.
 
-4. **Spawn a judge agent** to evaluate quality and decide whether to continue or stop. The judge runs on **every iteration including iteration 1** — if the skill is already good enough, there's no reason to burn another iteration:
+4. **Spawn a judge agent** to evaluate quality and decide whether to continue, stop, or revise evals. The judge runs on **every iteration including iteration 1** — if the skill is already good enough, there's no reason to burn another iteration. Always spawn the judge with `model: "opus"` — judgment calls benefit from the most capable model:
 
    ```
    Read agents/judge.md at <skill-creator-path>/agents/judge.md — it contains your role and output format.
@@ -447,6 +445,8 @@ This means your eval queries should be substantive enough that Claude would actu
 ### Step 4: Apply the result
 
 Take `best_description` from `<workspace>/run-loop-results.json` and update the skill's SKILL.md frontmatter. Show the user before/after and report the scores.
+
+If `best_description` is unchanged from the original (the loop found no improvement), you have two options: (1) accept the original and stop, or (2) manually write a new candidate based on the failing test queries. If you choose (2), rerun the loop with `--description-override "<candidate>"` before applying — never apply an untested manual description directly to SKILL.md.
 
 ---
 

@@ -63,7 +63,7 @@ Use filesystem as extended memory. Write persistent notes/plans outside context 
 
 | Type | When to create | Examples |
 |------|---------------|----------|
-| **Workflow skill** | Repeatable process with clear actions and instructions | `/give-plan`, `/cook`, `/fix`, `/test`, `/research` |
+| **Workflow skill** | Repeatable process with clear actions and instructions | `/give-plan`, `/cook`, `/fix`, `/test`,`/discuss` |
 | **Domain knowledge skill** | Domain has project-specific patterns the agent must follow | Created per-project during priming or via `/skill-creator` |
 
 

@@ -15,7 +15,7 @@ These rules are MANDATORY. NON-NEGOTIABLE. NO EXCEPTIONS. MUST FOLLOW AT ALL TIM
 ## Code Quality
 
 - DO NOT over-engineer or prematurely optimize
-- SURGICAL CHANGES ONLY — Only modify what is directly needed for the task. Do not rewrite, reorganize, or refactor surrounding code unless explicitly asked. When editing a file, change the minimum necessary lines — never rewrite the whole file or section to "clean up" alongside a targeted fix.
+- TRACE THE RIPPLE — After every change (rename, move, delete, interface change), grep for all references and update every affected call site, import, config entry, and doc in the same pass.
 - ALWAYS align with existing codebase structure, style, and patterns
 - DO NOT reinvent the wheel: MUST search for existing solutions FIRST — codebase, packages, libraries, CLI flags (`--help`), built-in tool capabilities, and documented workflows (scripts, skill files, workflow docs) — before implementing workarounds or manual alternatives. If an established process or pattern exists, use or extend it — never invent a parallel approach from scratch. Prefer established, well-maintained solutions over custom code.
 - MUST NOT add unnecessary, obvious, or progress comments to code. Code should be self-documenting. Only add comments for non-obvious logic or complex business rules.

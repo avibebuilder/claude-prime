@@ -1,15 +1,19 @@
 # Runtime Debugging with HTTP Log Server
 
-Hypothesis-driven runtime instrumentation for bugs that static analysis cannot resolve.
+Hypothesis-driven runtime instrumentation for cases where existing evidence is not enough to identify the root cause.
 
 ## When to Use
 
+Use this reference only after cheaper evidence sources have come up short.
+
 - Bug requires runtime data: variable states, execution paths, timing
-- Static analysis and code reading are insufficient to identify root cause
+- Static analysis and existing logs are insufficient to identify root cause
 - Need to verify which code path actually executes at runtime
 - Reproducing the bug produces no useful console/log output
 
 ## Debug Server
+
+Use this server only when you need new runtime evidence and the user has approved starting a local background process.
 
 | Detail | Value |
 |--------|-------|
@@ -18,7 +22,7 @@ Hypothesis-driven runtime instrumentation for bugs that static analysis cannot r
 | Host | `127.0.0.1:6143` |
 | Endpoint | `POST /ingest/{sessionId}` |
 | Log file | `tmp/diagnose-{sessionId}.log` (JSONL format) |
-| Stop | Kill the background process after debugging completes |
+| Stop | Kill the background process after `/fix` finishes verification and cleanup |
 
 ## Log Schema
 
@@ -30,8 +34,17 @@ Each line in the JSONL log file follows this schema:
 | `timestamp` | number | `Date.now()` / epoch milliseconds |
 | `location` | string | `file:line` where instrumented |
 | `message` | string | Human-readable description |
-| `data` | object | Captured variable states and values |
+| `data` | object | Only the minimum hypothesis-testing fields needed for diagnosis |
 | `hypothesisId` | string | Which hypothesis this log tests (e.g. `"A"`, `"B"`, `"A,B"`) |
+
+### Data minimization rules
+
+Treat debug logs as durable artifacts.
+
+- Never log secrets or credentials: tokens, cookies, passwords, API keys, auth headers, session IDs, or private keys
+- Never log full PII payloads when a boolean, count, ID, or redacted field is enough
+- Prefer booleans, enum values, lengths, counts, cache hits, branch decisions, status codes, and redacted identifiers over raw objects
+- If a value might be sensitive, log whether it exists or a truncated/redacted form instead of the full value
 
 ```json
 {
@@ -39,10 +52,13 @@ Each line in the JSONL log file follows this schema:
   "timestamp": 1719432000000,
   "location": "src/auth.ts:42",
   "message": "Token validation result",
-  "data": { "token": "eyJ...", "isValid": false, "reason": "expired" },
+  "data": { "hasToken": true, "isValid": false, "reason": "expired" },
   "hypothesisId": "A"
 }
 ```
+
+Bad: `{"token": "eyJ...", "email": "user@example.com"}`
+Good: `{"hasToken": true, "emailDomain": "example.com", "isValid": false}`
 
 ## Instrumentation Patterns
 
@@ -60,7 +76,7 @@ fetch('http://127.0.0.1:6143/ingest/SESSION_ID', {
     timestamp: Date.now(),
     location: 'src/auth.ts:42',
     message: 'Token validation result',
-    data: { token, isValid, reason },
+    data: { hasToken: Boolean(token), isValid, reason },
     hypothesisId: 'A'
   })
 }).catch(() => {});
@@ -84,7 +100,7 @@ try:
             'timestamp': int(time.time() * 1000),
             'location': 'src/auth.py:42',
             'message': 'Token validation result',
-            'data': {'token': token, 'is_valid': is_valid},
+            'data': {'has_token': bool(token), 'is_valid': is_valid},
             'hypothesisId': 'A'
         }).encode(),
         headers={'Content-Type': 'application/json'},
@@ -99,15 +115,15 @@ except Exception:
 
 1. **Generate hypotheses** -- formulate 2-4 possible root causes for the bug
 2. **Identify evidence** -- for each hypothesis, determine what runtime data would prove or disprove it
-3. **Instrument** -- insert log points tagged with `hypothesisId` at relevant code paths
+3. **Instrument narrowly** -- insert log points tagged with `hypothesisId` only at code paths that distinguish between those hypotheses
 4. **Reproduce** -- ask the user to trigger the bug
 5. **Read logs** -- parse `tmp/diagnose-{sessionId}.log`
-6. **Analyze** -- determine which hypotheses are supported or eliminated by the evidence
-7. **Fix** -- apply the fix targeting the confirmed root cause
+6. **Analyze** -- determine which hypotheses are supported, eliminated, or still ambiguous
+7. **Hand off** -- pass the confirmed diagnosis and any active instrumentation to `/fix`
 
 ## Cleanup Procedure
 
-After the fix is verified:
+After `/fix` verifies the repair:
 
 1. Search for all `#region agent log` / `#endregion` blocks (and Python `# region agent log` / `# endregion`) and remove them
 2. Stop the debug server background process

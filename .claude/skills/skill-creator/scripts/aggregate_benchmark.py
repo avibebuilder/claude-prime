@@ -221,7 +221,7 @@ def load_run_results(benchmark_dir: Path) -> dict:
                         pass
 
                 # Extract metrics if available
-                metrics = grading.get("execution_metrics", {})
+                metrics = grading.get("execution_metrics") or {}
                 result["tool_calls"] = metrics.get("total_tool_calls", 0)
                 result["errors"] = metrics.get("errors_encountered", 0)
 

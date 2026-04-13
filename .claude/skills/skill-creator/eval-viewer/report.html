@@ -898,7 +898,6 @@
       line-height: 1.5;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
       color: var(--text);
       transition: color 0.15s;
     }
@@ -2183,6 +2182,14 @@
         qualityDelta = lastIter.quality_score - firstIter.quality_score;
       }
       var risks = hasData ? collectRisks(iters) : [];
+      // Judge approved = decision is 'stop' (loop ended) with quality score >= 8.0
+      // 'continue' means more iterations needed; 'stop' with high score means ship it
+      var judgeApproved = false;
+      var _lastJudge = (hasData && lastIter.judge) ? lastIter.judge : (D.judge || null);
+      if (_lastJudge && _lastJudge.decision) {
+        judgeApproved = _lastJudge.decision.toLowerCase() === 'stop' &&
+          _lastJudge.quality_score != null && _lastJudge.quality_score >= 8.0;
+      }
       var html = '';
       // ======== 1. HEADER ========
       html += '<div class="dashboard">';
@@ -2213,7 +2220,7 @@
       // Right column (stacked: nominal + timestamp row, then badge)
       html += '<div class="header-right">';
       html += '<div class="header-right-top">';
-      if (risks.length === 0 && hasData) {
+      if ((risks.length === 0 || judgeApproved) && hasData) {
         html += '<div class="header-nominal"><div class="sys-dot" style="width:5px;height:5px;"></div> NOMINAL</div>';
       }
       html += '<div class="header-timestamp">' + esc(D.generated_at || '') + '</div>';
@@ -2231,14 +2238,14 @@
       html += '</div>'; // header-right
       html += '<div class="scan-line"></div>';
       html += '</div>'; // report-header
-      if (!hasData) {
+      if (!hasData && !D.description_optimization) {
         html += '<div class="cyber-panel"><div class="empty-state">No iteration data available. Run the skill optimization loop to generate report data.</div></div>';
         html += '</div>';
         document.getElementById('app').innerHTML = html;
         return;
       }
-      // ======== RISK BANNER (if risks) ========
-      if (risks.length > 0) {
+      // ======== RISK BANNER (if risks, suppressed when judge approved) ========
+      if (risks.length > 0 && !judgeApproved) {
         var bannerCls = risks.some(function (r) { return r.level === 'error'; }) ? '' : ' risk-banner-warn';
         var bannerIcon = risks.some(function (r) { return r.level === 'error'; }) ? '!' : '?';
         html += '<div class="risk-banner' + bannerCls + '">';
@@ -2255,7 +2262,7 @@
       html += '<div class="content-area">';
 
       // ======== 2. VERDICT HERO ========
-      html += buildVerdictHero(D, iters, lastIter);
+      if (hasData) html += buildVerdictHero(D, iters, lastIter);
 
       // ======== 3. DESCRIPTION ========
       if (D.description_optimization) {
@@ -2293,18 +2300,7 @@
         html += '</div></div>';
       }
 
-      // ======== 4. WHAT BROKE ========
-      var failures = D.failures || [];
-      if (failures.length > 0) {
-        html += '<div class="cyber-panel">';
-        html += '<div class="scan-sweep"></div>';
-        html += '<div class="section-head"><span class="section-title">What broke</span></div>';
-        html += '<div class="section-content">';
-        html += buildWhatBroke(failures);
-        html += '</div></div>';
-      }
-
-      // ======== 5. HOW IT IMPROVED (= richer change log) ========
+      // ======== 4. HOW IT IMPROVED (= richer change log) ========
       if (iters.length > 0) {
         html += '<div class="cyber-panel">';
         html += '<div class="scan-sweep"></div>';
@@ -2314,11 +2310,11 @@
         html += '</div></div>';
       }
 
-      // ======== 6. DETAIL SECTION ========
+      // ======== 5. DETAIL SECTION ========
       var allEvalNames = collectEvalNames(iters);
       var heatmapData = buildHeatmapData(iters, allEvalNames);
       html += '<div class="detail-section">';
-      html += '<div class="detail-section-header">Details</div>';
+      if (hasData) html += '<div class="detail-section-header">Details</div>';
 
       if (heatmapData.length > 0) {
         html += '<div class="cyber-panel">';
@@ -2327,6 +2323,16 @@
         html += '<div class="section-content"><div class="heatmap-wrap">';
         html += buildHeatmap(heatmapData, iters, D.eval_prompts || {});
         html += '</div></div></div>';
+      }
+
+      var failures = D.failures || [];
+      if (failures.length > 0) {
+        html += '<div class="cyber-panel">';
+        html += '<div class="scan-sweep"></div>';
+        html += '<div class="section-head"><span class="section-title">What broke</span></div>';
+        html += '<div class="section-content">';
+        html += buildWhatBroke(failures);
+        html += '</div></div>';
       }
 
 

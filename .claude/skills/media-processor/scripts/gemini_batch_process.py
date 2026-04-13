@@ -34,7 +34,7 @@ except ImportError:
 MODEL_ROUTING = {
     "transcribe": "gemini-3-flash-preview",
     "analyze": "gemini-3-flash-preview",
-    "extract": "gemini-2.5-flash",
+    "extract": "gemini-3-flash-preview",
 }
 
 MODELS_PAGE_URL = "https://ai.google.dev/gemini-api/docs/models"
@@ -95,22 +95,20 @@ def upload_file(client: genai.Client, file_path: str, verbose: bool = False) -> 
 
     myfile = client.files.upload(file=file_path)
 
-    mime_type = get_mime_type(file_path)
-    if mime_type.startswith('video/') or mime_type.startswith('audio/'):
-        max_wait = 300
-        elapsed = 0
-        while myfile.state.name == 'PROCESSING' and elapsed < max_wait:
-            time.sleep(2)
-            myfile = client.files.get(name=myfile.name)
-            elapsed += 2
-            if verbose and elapsed % 10 == 0:
-                print(f"  Processing... {elapsed}s")
+    max_wait = 300
+    elapsed = 0
+    while myfile.state.name == 'PROCESSING' and elapsed < max_wait:
+        time.sleep(2)
+        myfile = client.files.get(name=myfile.name)
+        elapsed += 2
+        if verbose and elapsed % 10 == 0:
+            print(f"  Processing... {elapsed}s")
 
-        if myfile.state.name == 'FAILED':
-            raise ValueError(f"File processing failed: {file_path}")
+    if myfile.state.name == 'FAILED':
+        raise ValueError(f"File processing failed: {file_path}")
 
-        if myfile.state.name == 'PROCESSING':
-            raise TimeoutError(f"Processing timeout after {max_wait}s: {file_path}")
+    if myfile.state.name == 'PROCESSING':
+        raise TimeoutError(f"Processing timeout after {max_wait}s: {file_path}")
 
     if verbose:
         print(f"  Uploaded: {myfile.name}")
@@ -123,7 +121,6 @@ def process_file(
     file_path: str,
     prompt: str,
     model: str,
-    task: str,
     format_output: str,
     verbose: bool = False,
     max_retries: int = 3
@@ -230,7 +227,6 @@ def batch_process(
             file_path=file_path,
             prompt=prompt,
             model=model,
-            task=task,
             format_output=format_output,
             verbose=verbose
         )
@@ -316,7 +312,7 @@ Examples:
     args = parser.parse_args()
 
     if args.model is None:
-        args.model = MODEL_ROUTING.get(args.task, 'gemini-2.5-flash')
+        args.model = MODEL_ROUTING.get(args.task, 'gemini-3-flash-preview')
 
     if not args.prompt:
         if args.task == 'transcribe':

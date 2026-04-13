@@ -30,8 +30,9 @@ Extract from the result:
 - `Anti_Patterns` — what to avoid
 - `Decision_Rules` — conditional logic (JSON)
 
-### Step 3: Multi-Domain Search (run in parallel)
+### Step 3: Multi-Domain Search
 
+Run these searches independently, or in parallel when your environment supports it.
 Use the style priority from Step 2 to weight the style search.
 
 ```bash
@@ -72,8 +73,8 @@ Combine everything into a cohesive recommendation:
 - Performance and accessibility notes
 
 **Colors**
-- Primary, Secondary, CTA, Background, Text hex values from color results
-- Include `Border (Hex)` if available
+- Primary, On Primary, Secondary, On Secondary, Accent, On Accent, Background, Foreground, and Border values from color results
+- Use the paired "on" colors to preserve readable text and UI contrast on each surface
 
 **Typography**
 - Heading + Body font pairing

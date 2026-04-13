@@ -6,9 +6,9 @@ import { join } from 'node:path';
 
 const PORT = 6143;
 const HOST = '127.0.0.1';
-const sessionId = process.argv[2] || String(Date.now());
-const logDir = join(process.cwd(), '.claude', 'tmp');
-const logFile = join(logDir, `diagnose-${sessionId}.log`);
+const startupSessionId = process.argv[2] || String(Date.now());
+const logDir = join(process.cwd(), 'tmp');
+const logFileFor = (sessionId) => join(logDir, `diagnose-${sessionId}.log`);
 
 mkdirSync(logDir, { recursive: true });
 
@@ -35,9 +35,11 @@ const server = createServer((req, res) => {
   req.on('end', () => {
     try {
       const parsed = JSON.parse(body);
-      appendFileSync(logFile, JSON.stringify({ ...parsed, _session: match[1], _ts: Date.now() }) + '\n');
+      const requestSessionId = match[1];
+      const logFile = logFileFor(requestSessionId);
+      appendFileSync(logFile, JSON.stringify({ ...parsed, _session: requestSessionId, _ts: Date.now() }) + '\n');
       res.writeHead(200, { ...corsHeaders, 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true }));
+      res.end(JSON.stringify({ ok: true, sessionId: requestSessionId, logFile }));
     } catch {
       res.writeHead(400, corsHeaders);
       res.end(JSON.stringify({ error: 'Invalid JSON' }));
@@ -54,7 +56,7 @@ server.on('error', (err) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(JSON.stringify({ port: PORT, logFile, sessionId }));
+  console.log(JSON.stringify({ port: PORT, defaultSessionId: startupSessionId, defaultLogFile: logFileFor(startupSessionId) }));
 });
 
 const shutdown = () => { server.close(() => process.exit(0)); };

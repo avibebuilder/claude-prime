@@ -36,7 +36,7 @@ DOMAINS = {
     "colors": {
         "file": "data/colors.csv",
         "search": ["Product Type", "Notes"],
-        "output": ["Product Type", "Primary (Hex)", "Secondary (Hex)", "CTA (Hex)", "Background (Hex)", "Text (Hex)", "Border (Hex)", "Notes"],
+        "output": ["Product Type", "Primary", "On Primary", "Secondary", "On Secondary", "Accent", "On Accent", "Background", "Foreground", "Border", "Notes"],
     },
     "typography": {
         "file": "data/typography.csv",
@@ -68,11 +68,6 @@ DOMAINS = {
         "search": ["Category", "Icon Name", "Keywords", "Best For"],
         "output": ["Category", "Icon Name", "Keywords", "Library", "Import Code", "Usage", "Best For", "Style"],
     },
-    "react-performance": {
-        "file": "data/react-performance.csv",
-        "search": ["Category", "Issue", "Keywords", "Description"],
-        "output": ["Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"],
-    },
     "ui-reasoning": {
         "file": "data/ui-reasoning.csv",
         "search": ["UI_Category", "Recommended_Pattern", "Style_Priority"],
@@ -80,7 +75,7 @@ DOMAINS = {
     },
     "web-interface": {
         "file": "data/web-interface.csv",
-        "search": ["Category", "Issue", "Keywords", "Description"],
+        "search": ["Category", "Issue", "Description", "Platform"],
         "output": ["Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"],
     },
 }
@@ -279,13 +274,24 @@ def search(query: str, domain: Optional[str] = None, stack: Optional[str] = None
         results = search_csv_data(rows, query, all_columns, top_k)
 
         if json_output:
-            print(json.dumps([r['row'] for r in results], indent=2))
+            print(json.dumps({
+                "query": query,
+                "stack": stack,
+                "results": [
+                    {
+                        "score": r["score"],
+                        "row": r["row"],
+                    }
+                    for r in results
+                ],
+            }, indent=2))
         else:
             print(f"\nStack: {stack}")
             print(format_results(results, all_columns))
 
     else:
         # Domain search
+        auto_detected = domain is None
         target_domain = domain or detect_domain(query)
 
         if target_domain not in DOMAINS:
@@ -303,9 +309,20 @@ def search(query: str, domain: Optional[str] = None, stack: Optional[str] = None
         results = search_csv_data(rows, query, config["search"], top_k)
 
         if json_output:
-            print(json.dumps([r['row'] for r in results], indent=2))
+            print(json.dumps({
+                "query": query,
+                "domain": target_domain,
+                "auto_detected": auto_detected,
+                "results": [
+                    {
+                        "score": r["score"],
+                        "row": r["row"],
+                    }
+                    for r in results
+                ],
+            }, indent=2))
         else:
-            print(f"\nDomain: {target_domain} (auto-detected)" if not domain else f"\nDomain: {target_domain}")
+            print(f"\nDomain: {target_domain} (auto-detected)" if auto_detected else f"\nDomain: {target_domain}")
             print(format_results(results, config["output"]))
 
 

@@ -4,7 +4,8 @@ Shared database module for the self-improvement pipeline.
 
 Provides schema, connection factory, and helper queries used by all three stages.
 Usage as module: from self_improve_db import get_db, get_project_root
-Usage as CLI:   python3 self_improve_db.py resolve <id> approved|rejected
+Usage as CLI:   python3 self_improve_db.py resolve list
+                python3 self_improve_db.py resolve <id> approved|rejected
 """
 
 import json
@@ -97,6 +98,23 @@ def cleanup_old_data(conn: sqlite3.Connection, days: int = 9) -> None:
     conn.commit()
 
 
+def list_pending_proposals(project_root: str) -> None:
+    """Print pending proposals as JSON for CLI consumers."""
+    conn = get_db(project_root)
+    try:
+        rows = conn.execute(
+            "SELECT id, theme, content, rationale FROM proposals WHERE status = 'pending' ORDER BY created_at"
+        ).fetchall()
+        print(
+            json.dumps(
+                [dict(row) for row in rows],
+                indent=2,
+            )
+        )
+    finally:
+        conn.close()
+
+
 def resolve_proposal(project_root: str, proposal_id: int, status: str) -> None:
     """Mark a proposal as approved or rejected."""
     conn = get_db(project_root)
@@ -176,7 +194,9 @@ def clear_announcement(project_root: str) -> None:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    if len(sys.argv) >= 4 and sys.argv[1] == "resolve":
+    if len(sys.argv) >= 3 and sys.argv[1] == "resolve" and sys.argv[2] == "list":
+        list_pending_proposals(get_project_root())
+    elif len(sys.argv) >= 4 and sys.argv[1] == "resolve":
         try:
             prop_id = int(sys.argv[2])
             new_status = sys.argv[3]
@@ -188,5 +208,6 @@ if __name__ == "__main__":
             print(f"Invalid proposal ID: {sys.argv[2]}")
             sys.exit(1)
     else:
-        print("Usage: python3 self_improve_db.py resolve <id> approved|rejected")
+        print("Usage: python3 self_improve_db.py resolve list")
+        print("       python3 self_improve_db.py resolve <id> approved|rejected")
         sys.exit(1)

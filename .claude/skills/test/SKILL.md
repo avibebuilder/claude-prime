@@ -7,10 +7,6 @@ argument-hint: what-to-test-and-outcome
 
 Think harder.
 
-## Role
-
-You are a test runner. Run tests and report results — don't fix failures.
-
 ## Process
 
 ### 1. Understand Test Goal

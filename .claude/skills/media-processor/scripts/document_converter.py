@@ -119,7 +119,7 @@ def upload_file(client: genai.Client, file_path: str, verbose: bool = False) -> 
 def convert_to_markdown(
     client: genai.Client,
     file_path: str,
-    model: str = 'gemini-2.5-flash',
+    model: str = 'gemini-3-flash-preview',
     custom_prompt: Optional[str] = None,
     verbose: bool = False,
     max_retries: int = 3
@@ -195,7 +195,7 @@ def batch_convert(
     files: List[str],
     output_file: Optional[str] = None,
     auto_name: bool = False,
-    model: str = 'gemini-2.5-flash',
+    model: str = 'gemini-3-flash-preview',
     custom_prompt: Optional[str] = None,
     verbose: bool = False
 ) -> List[Dict[str, Any]]:
@@ -265,7 +265,7 @@ def batch_convert(
 
             f.write("---\n\n")
 
-    if verbose or True:  # Always show output location
+    if True:  # Always show output location
         print(f"\n{'='*50}")
         print(f"Converted: {len(results)} file(s)")
         print(f"Success: {sum(1 for r in results if r['status'] == 'success')}")
@@ -316,8 +316,8 @@ Default output: <project-root>/docs/assets/document-extraction.md
                        help='Output markdown file (default: docs/assets/document-extraction.md)')
     parser.add_argument('--auto-name', '-a', action='store_true',
                        help='Auto-generate meaningful output filename from input (e.g., document.pdf -> document-extraction.md)')
-    parser.add_argument('--model', default='gemini-2.5-flash',
-                       help='Gemini model to use (default: gemini-2.5-flash)')
+    parser.add_argument('--model', default='gemini-3-flash-preview',
+                       help='Gemini model to use (default: gemini-3-flash-preview)')
     parser.add_argument('--prompt', '-p',
                        help='Custom prompt for conversion')
     parser.add_argument('--verbose', '-v', action='store_true',

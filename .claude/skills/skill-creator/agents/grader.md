@@ -30,6 +30,8 @@ You receive these parameters in your prompt:
 2. Read/examine each file relevant to the expectations. If outputs aren't plain text, use the inspection tools provided in your prompt — don't rely solely on what the transcript says the executor produced.
 3. Note contents, structure, and quality
 
+**For code-level assertions** (what was modified, where, how): always read the actual source files — never use `summary.md` as a proxy for code inspection. Summaries describe the executor's intent; source files are the ground truth. An executor can write an accurate summary of a wrong fix, or a misleading summary of a correct one.
+
 ### Step 3: Evaluate Each Assertion
 
 For each expectation:
@@ -39,6 +41,8 @@ For each expectation:
    - **PASS**: Clear evidence the expectation is true AND the evidence reflects genuine task completion, not just surface-level compliance
    - **FAIL**: No evidence, or evidence contradicts the expectation, or the evidence is superficial (e.g., correct filename but empty/wrong content)
 3. **Cite the evidence**: Quote the specific text or describe what you found
+
+**Process vs. content evidence.** If the expectation tests what the executor *did* ("reads X", "runs Y", "uses tool Z"), the evidence must come from `transcript.md`, citing a filename in the final doc is not proof the executor read it. If `transcript.md` is missing or lacks the relevant tool call, FAIL the assertion and raise it in `eval_feedback`.
 
 ### Step 4: Extract and Verify Claims
 

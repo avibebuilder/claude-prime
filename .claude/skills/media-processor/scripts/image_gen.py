@@ -3,7 +3,7 @@
 Generate images using Gemini API.
 
 Supports two modes:
-- generate: Standard image generation (gemini-2.5-flash-image)
+- generate: Standard image generation (gemini-3.1-flash-image-preview)
 - generate-hq: High-quality image generation (gemini-3-pro-image-preview)
 """
 
@@ -28,7 +28,7 @@ except ImportError:
     load_dotenv = None
 
 MODEL_ROUTING = {
-    "generate": "gemini-2.5-flash-image",
+    "generate": "gemini-3.1-flash-image-preview",
     "generate-hq": "gemini-3-pro-image-preview",
 }
 
@@ -189,7 +189,7 @@ Examples:
         sys.exit(1)
 
     if args.model is None:
-        args.model = MODEL_ROUTING.get(args.mode, 'gemini-2.5-flash-image')
+        args.model = MODEL_ROUTING.get(args.mode, 'gemini-3.1-flash-image-preview')
 
     if args.verbose:
         print(f"Mode: {args.mode}")

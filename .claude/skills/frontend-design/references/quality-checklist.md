@@ -1,6 +1,7 @@
 # Pre-Delivery Quality Checklist
 
 Run through this checklist before delivering any UI implementation.
+Use it as a final self-critique pass, not as a reason to add features the user did not ask for.
 
 ## 1. Visual Quality
 

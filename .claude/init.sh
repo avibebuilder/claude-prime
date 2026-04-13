@@ -36,7 +36,6 @@ echo -e "${YELLOW}[1/4] Checking .gitignore...${NC}"
 GITIGNORE_FILE="$PROJECT_ROOT/.gitignore"
 GITIGNORE_ENTRIES=(
     "tmp/"
-    "repomix-output.xml"
     "plans/**/*"
     "!plans/templates/*"
     "screenshots/*"

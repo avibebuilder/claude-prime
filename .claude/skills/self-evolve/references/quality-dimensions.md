@@ -1,4 +1,4 @@
- # Self-Evolve Checklists
+# Self-Evolve Checklists
 
 Non-obvious traps and mechanical checks only. Nothing Claude would do anyway.
 
@@ -30,3 +30,4 @@ When the same fact is stated differently across layers:
 - **Rules win over skills** — rules are guardrails, wrong code if missed
 - **Project refs win over CLAUDE.md** — refs are more detailed, CLAUDE.md is just an entry point
 - **Orphaned on-demand refs are invisible** — if a reference file exists but CLAUDE.md doesn't point to it, agents will never load it
+

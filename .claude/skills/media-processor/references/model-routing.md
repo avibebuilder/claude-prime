@@ -1,47 +1,43 @@
 # Model Routing
 
-Task-based model selection for ai-multimodal. Model IDs change frequently — check the [official models page](https://ai.google.dev/gemini-api/docs/models) for latest.
+Task-based model selection for media-processor. Model IDs change frequently — check the [official models page](https://ai.google.dev/gemini-api/docs/models) for latest.
 
 ## Default Routing
 
 | Task | Default Model | Rationale |
 |------|--------------|-----------|
-| `transcribe` | `gemini-3-flash-preview` | Multimodal audio input, cost-effective |
-| `analyze` | `gemini-3-flash-preview` | Best cost/quality balance for general analysis |
-| `extract` | `gemini-2.5-flash` | Cheapest option, sufficient for document extraction |
-| `generate` | `gemini-2.5-flash-image` | Fast image generation (~$0.039/image) — **paid plan required**|
-| `generate-hq` | `gemini-3-pro-image-preview` | Nano Banana Pro — 4K output, commercial grade — **paid plan required** |
+| `transcribe` | `gemini-3-flash-preview` | Multimodal audio input, best quality/cost balance |
+| `analyze` | `gemini-3-flash-preview` | Best quality/cost balance for general analysis |
+| `extract` | `gemini-3-flash-preview` | Fast multimodal extraction |
+| `generate` | `gemini-3.1-flash-image-preview` | High-efficiency image generation — **paid plan required** |
+| `generate-hq` | `gemini-3-pro-image-preview` | 4K output, commercial grade — **paid plan required** |
+| document conversion | `gemini-3-flash-preview` | Document-to-markdown via vision |
+
 Override any default with `--model <model-id>`.
 
 ## Model Tiers
 
-### Gemini 3 Flash (`gemini-3-flash-preview`)
-- Fast, cost-effective multimodal processing
-- 1M token context, configurable thinking levels
-- ~$0.50-1.00 input / $3.00 output per 1M tokens
+### Gemini 3.x (Current)
 
-### Gemini 2.5 Flash (`gemini-2.5-flash`)
-- Stable production workhorse, cheapest option
-- 1M token context
-- ~$0.30 input / $2.50 output per 1M tokens
+| Model | Best for |
+|-------|---------|
+| `gemini-3.1-pro-preview` | Complex reasoning, detailed analysis |
+| `gemini-3-flash-preview` | General-purpose multimodal, cost-effective |
+| `gemini-3.1-flash-lite-preview` | Budget batch jobs, simple tasks |
+| `gemini-3.1-flash-image-preview` | Standard image generation |
+| `gemini-3-pro-image-preview` | High-quality image gen, 4K, 14 reference images |
 
-### Nano Banana (`gemini-2.5-flash-image`) — **Paid plan required**
-- Speed-optimized image generation
-- 32.8K token context
-- ~$0.039 per generated image
+### Gemini 2.5 (Legacy — still available)
 
-### Nano Banana Pro (`gemini-3-pro-image-preview`) — **Paid plan required**
-- Highest-fidelity image generation, 4K output
-- Supports 14 reference images, localized edits
-- Commercial publishing grade
-- Free tier quota is 0 — requires billing enabled on Google AI Studio
-
-## Pricing Reference
-
-See [official pricing page](https://ai.google.dev/gemini-api/docs/pricing) for current rates.
+| Model | Best for |
+|-------|---------|
+| `gemini-2.5-pro` | Advanced reasoning (if 3.x preview isn't stable enough) |
+| `gemini-2.5-flash` | Production stability when preview models aren't suitable |
+| `gemini-2.5-flash-lite` | Cheapest option for simple tasks |
 
 ## When to Override
 
-- Complex image analysis: consider `gemini-3.1-pro-preview` over default flash
-- Budget-constrained batch jobs: use `gemini-2.5-flash` or `gemini-2.5-flash-lite`
-- Production stability: prefer `gemini-2.5-*` (stable) over `gemini-3-*-preview` (preview)
+- Complex image analysis (dense UI, charts): `--model gemini-3.1-pro-preview`
+- Production stability over latest features: `--model gemini-2.5-flash`
+- Minimum cost batch jobs: `--model gemini-3.1-flash-lite-preview`
+

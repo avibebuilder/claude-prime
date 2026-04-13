@@ -94,7 +94,7 @@ If project has business logic worth documenting, use:
 
 - **Workflow:** `cook`, `fix`, `test`, `review-code`, `research`, `ask`, `discuss`, `give-plan`, `create-doc`, `diagnose`
 - **Meta/tooling:** `optimus-prime`, `prime-sync`, `skill-creator`, `self-evolve`
-- **Utilities:** `docs-seeker`, `repomix`, `media-processor`
+- **Utilities:** `docs-seeker`, `media-processor`
 
 **Gate: List skills to remove and confirm with user before deleting.**
 

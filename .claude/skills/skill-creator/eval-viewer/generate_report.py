@@ -232,8 +232,6 @@ def extract_failures(iteration_dirs: list[Path]) -> list[dict]:
             if not exp.get("passed", True):
                 evidence = exp.get("evidence", "") or ""
                 first_sentence = evidence.split(". ")[0]
-                if len(first_sentence) > 120:
-                    first_sentence = first_sentence[:117] + "..."
                 failures.append({
                     "text": exp.get("text", ""),
                     "evidence": first_sentence,

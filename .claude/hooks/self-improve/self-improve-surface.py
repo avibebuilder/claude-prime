@@ -134,7 +134,7 @@ def _surface_proposals(conn, rows, dismiss_count: int, project_root: str) -> Non
         f"You have {n} pending self-improvement proposal(s). "
         "The user may not see a UI banner (e.g. VS Code extension). "
         "At the END of your first response (after addressing whatever the user asked), "
-        "briefly suggest: open a new tab/conversation and run /self-evolve to review pending proposals. "
+        "briefly hint user that we have {n} thing(s) for self-improvements, let open a new tab/conversation and run /self-evolve to review them. (format: > your-text with funny tones and emojis) "
         "Keep it to one short sentence — do not interrupt their workflow or front-load it."
         "</self_improve_surface>"
     )

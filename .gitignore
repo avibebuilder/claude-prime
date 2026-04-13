@@ -47,7 +47,6 @@ __pycache__/
 .venv
 
 tmp/
-repomix-output.xml
 plans/**/*
 !plans/templates/*
 screenshots/*
@@ -57,6 +56,9 @@ docs/research/*
 docs/session-reports/*
 docs/test-cases/*
 claude-prime-*.zip
+
+# task tracker
+.tasks/
 
 # prime sync state
 .claude/prime-projects.json

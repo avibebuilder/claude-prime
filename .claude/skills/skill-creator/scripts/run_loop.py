@@ -58,6 +58,7 @@ def run_loop(
     verbose: bool,
     live_report_path: Path | None = None,
     log_dir: Path | None = None,
+    output_path: Path | None = None,
 ) -> dict:
     """Run the eval + improvement loop."""
     project_root = find_project_root()
@@ -137,18 +138,20 @@ def run_loop(
         })
 
         # Write live report if path provided
+        partial_output = {
+            "original_description": original_description,
+            "best_description": current_description,
+            "best_score": "in progress",
+            "iterations_run": len(history),
+            "holdout": holdout,
+            "train_size": len(train_set),
+            "test_size": len(test_set),
+            "history": history,
+        }
         if live_report_path:
-            partial_output = {
-                "original_description": original_description,
-                "best_description": current_description,
-                "best_score": "in progress",
-                "iterations_run": len(history),
-                "holdout": holdout,
-                "train_size": len(train_set),
-                "test_size": len(test_set),
-                "history": history,
-            }
             live_report_path.write_text(generate_html(partial_output, auto_refresh=True, skill_name=name))
+        if output_path:
+            output_path.write_text(json.dumps(partial_output, indent=2))
 
         if verbose:
             def print_eval_stats(label, results, elapsed):
@@ -305,6 +308,7 @@ def main():
         verbose=args.verbose,
         live_report_path=live_report_path,
         log_dir=log_dir,
+        output_path=Path(args.output) if args.output else None,
     )
 
     # Save JSON output

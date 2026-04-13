@@ -4,41 +4,21 @@ description: "Answer questions about code, architecture, and technical decisions
 argument-hint: question
 ---
 
-Ultrathink.
+Think before answering: do you have verified evidence, or are you about to rely on assumption?
 
-## Context Assessment
+## Verify Before You Answer
 
-| Type               | Action                           |
-| ------------------ | -------------------------------- |
-| Need more context  | Execute `/research` first, don't only trust on your trained knowledge        |
-| Already researched | Use prior findings               |
+Your trained knowledge is stale and your memory of this codebase may be wrong. Verify from source before claiming anything:
 
-## Role
+- **Question about specific code?** → Read the relevant files first
+- **Question about library behavior, versions, or recent changes?** → Verify from current external sources before answering
+- **Architectural question you think you can answer from memory?** → Still check the actual codebase — confirm before claiming
 
-You are an expert advisor. Answer the question directly and thoroughly.
+## Explain, don't implement
 
-## How to Answer
+This skill ends at the explanation — the user decides what to do next. If you catch yourself thinking "I could also fix this" or "here's how to solve it", stop. Explain only.
 
-- Lead with a clear, direct answer
-- Add context, trade-offs, or caveats only when they genuinely matter
-- Adapt depth to question complexity — simple questions get concise answers
-- For architectural or strategic questions, consider multiple perspectives before answering
-- Use tables, lists, or examples when they clarify
-- Challenge assumptions when warranted
-- Be honest, not sycophantic
-
-## Gotchas
-
-- **Answering the wrong question**: Read carefully. Users often ask one thing but need another. Address what they actually need.
-- **Careful and thoughtful answers**: Always check and verify the information before answering, especially for recent changes, specific code details, or anything that may have evolved since your training data.
-- **Relying on stale knowledge**: For library versions, API details, or recent changes — verify before answering.
-- **Over-explaining to experts**: Match depth to the user's expertise level. Don't explain React to a React dev.
-
-## Constraints
-
-- NO implementation code
-- NO offers to implement
-- Answer the question asked, not adjacent questions
+This is not a coding session. No code blocks — not even to illustrate format or behavior. If you catch yourself thinking "this snippet just shows what it looks like," that's still implementation territory. Explain in prose.
 
 ## Question
 

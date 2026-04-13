@@ -16,7 +16,6 @@ const { banner } = require("./utils");
 
 const GITIGNORE_ENTRIES = [
   "tmp/",
-  "repomix-output.xml",
   "plans/**/*",
   "!plans/templates/*",
   "screenshots/*",
