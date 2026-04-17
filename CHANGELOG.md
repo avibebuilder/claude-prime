@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+- 📝 Update readme
+- 🔧 Support teammate for cook/fix
 ## 1.2.0
 
 - ✨ Powerful skill-creator replace touch-skill
