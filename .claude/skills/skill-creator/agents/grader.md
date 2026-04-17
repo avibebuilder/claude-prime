@@ -38,8 +38,9 @@ For each expectation:
 
 1. **Search for evidence** in the transcript and outputs
 2. **Determine verdict**:
-   - **PASS**: Clear evidence the expectation is true AND the evidence reflects genuine task completion, not just surface-level compliance
-   - **FAIL**: No evidence, or evidence contradicts the expectation, or the evidence is superficial (e.g., correct filename but empty/wrong content)
+   - **PASS** (`passed: true`): Clear evidence the expectation is true AND the evidence reflects genuine task completion, not just surface-level compliance
+   - **FAIL** (`passed: false`): No evidence, or evidence contradicts the expectation, or the evidence is superficial (e.g., correct filename but empty/wrong content)
+   - **NEUTRAL** (`passed: null`): The assertion doesn't apply because the agent took a superior path that made the assertion moot. Use this when the agent solved the underlying goal better than the assertion anticipated — not as a way to excuse a skip. Explain clearly in `evidence` what the agent did instead and why it's better.
 3. **Cite the evidence**: Quote the specific text or describe what you found
 
 **Process vs. content evidence.** If the expectation tests what the executor *did* ("reads X", "runs Y", "uses tool Z"), the evidence must come from `transcript.md`, citing a filename in the final doc is not proof the executor read it. If `transcript.md` is missing or lacks the relevant tool call, FAIL the assertion and raise it in `eval_feedback`.
@@ -100,6 +101,12 @@ Save results to `{outputs_dir}/../grading.json` (sibling to outputs_dir).
 - The evidence is superficial — the assertion is technically satisfied but the underlying task outcome is wrong or incomplete
 - The output appears to meet the assertion by coincidence rather than by actually doing the work
 
+**NEUTRAL (`passed: null`) when**:
+- The agent took a superior path that made the assertion moot — the underlying goal was achieved better than the assertion anticipated
+- Use sparingly: only when the agent genuinely exceeded the assertion, not as a way to excuse a gap or skip
+- Always explain in `evidence` what the agent did instead and why it's the better outcome
+- Neutral expectations are excluded from `pass_rate`
+
 **When uncertain**: The burden of proof to pass is on the expectation.
 
 ### Step 8: Read Executor Metrics and Timing
@@ -133,7 +140,8 @@ Write a JSON file with this structure:
   "summary": {
     "passed": 2,
     "failed": 1,
-    "total": 3,
+    "neutral": 1,
+    "total": 4,
     "pass_rate": 0.67
   },
   "execution_metrics": {
@@ -191,13 +199,14 @@ Write a JSON file with this structure:
 
 - **expectations**: Array of graded expectations
   - **text**: The original expectation text
-  - **passed**: Boolean - true if expectation passes
-  - **evidence**: Specific quote or description supporting the verdict
+  - **passed**: `true` (pass), `false` (fail), or `null` (neutral — agent took a superior path that made the assertion moot)
+  - **evidence**: Specific quote or description supporting the verdict; for neutral, explain what the agent did instead
 - **summary**: Aggregate statistics
   - **passed**: Count of passed expectations
   - **failed**: Count of failed expectations
-  - **total**: Total expectations evaluated
-  - **pass_rate**: Fraction passed (0.0 to 1.0)
+  - **neutral**: Count of neutral expectations (excluded from pass_rate)
+  - **total**: Total expectations evaluated (including neutral)
+  - **pass_rate**: `passed / (passed + failed)` — neutral expectations are excluded
 - **execution_metrics**: Copied from executor's metrics.json (if available)
   - **output_chars**: Total character count of output files (proxy for tokens)
   - **transcript_chars**: Character count of transcript

@@ -229,12 +229,13 @@ def extract_failures(iteration_dirs: list[Path]) -> list[dict]:
 
         failures = []
         for exp in grading.get("expectations", []):
-            if not exp.get("passed", True):
+            passed = exp.get("passed")
+            if passed is False or passed is None:
                 evidence = exp.get("evidence", "") or ""
-                first_sentence = evidence.split(". ")[0]
                 failures.append({
                     "text": exp.get("text", ""),
-                    "evidence": first_sentence,
+                    "evidence": evidence,
+                    "neutral": passed is None,
                 })
 
         if failures:
@@ -367,8 +368,9 @@ def build_report_data(
 
             for ename, pe in per_eval.items():
                 if pe.get("pass_rate") is None and pe.get("expectations"):
-                    total = len(pe["expectations"])
-                    passed = sum(1 for a in pe["expectations"] if a.get("passed"))
+                    scored = [a for a in pe["expectations"] if a.get("passed") is not None]
+                    total = len(scored)
+                    passed = sum(1 for a in scored if a.get("passed") is True)
                     pe["pass_rate"] = passed / total if total > 0 else None
 
         pass_rate = None

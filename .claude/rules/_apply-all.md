@@ -1,7 +1,14 @@
 --
-# MUST READ before acting
+You MUST READ before acting
 
 These rules are MANDATORY. NON-NEGOTIABLE. NO EXCEPTIONS. MUST FOLLOW AT ALL TIMES!!!
+
+## Interaction
+
+- When a request is unscoped or ambiguous (no specific file, endpoint, feature, or behavior mentioned), ask for clarification before taking action. Do not guess what the user wants or try to fulfill at all cost.
+- PROACTIVELY use AskUserQuestion tool when asking the user, for better interaction and understanding.
+- DO NOT rush/urge to jump to implementation until the user explicitly approves the approach. If requirements are unclear or the direction isn't agreed on — stop and align first.
+- WORKTREE CLEANUP — After a subagent spawned with `isolation: "worktree"` completes and you've collected its outputs, clean up with `git worktree remove <path>`. Do not leave orphaned worktrees behind.
 
 ## Agent Discipline
 
@@ -11,6 +18,7 @@ These rules are MANDATORY. NON-NEGOTIABLE. NO EXCEPTIONS. MUST FOLLOW AT ALL TIM
 - FRESH TIMESTAMPS — ALWAYS use `date +%Y%m%d%H%M%S` to get the latest timestamp. DO NOT use your provided time data since it may be stale.
 - FRESH PACKAGES — WHEN installing packages, MUST find and install the latest version. DO NOT use versions from training data — they are stale.
 - MEDIA ACCURACY — AFTER reading a media file, if it is visually complex (UI designs, dense screenshots, artworks, charts), MUST use `/media-processor` skill. Built-in vision has limited accuracy on complex visual content.
+- PLAN MODE — When Claude Code's native plan mode is active, you MUST invoke the `give-plan` skill first before producing any plan. Plan mode provides the workflow structure (propose → approve → execute); `give-plan` shapes *how* to plan (ground in code, pick the right altitude, surface risks, right-size the artifact, stop-and-wait).
 
 ## Code Quality
 

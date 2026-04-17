@@ -117,11 +117,12 @@ Every command works on its own — use what you need, skip what you don't. The m
 /ask → quick answers, no code changes
 
 
-/research → /discuss → /give-plan → approve → /cook → /test → /review-code
-    ↑           ↑           ↑                     ↑        ↑          ↑
- context     debate       plan                implement  verify    quality
+/discuss → /give-plan → approve → /cook → /test → /review-code
+    ↑           ↑                     ↑        ↑          ↑
+ debate        plan               implement  verify    quality
 
 
+/diagnose → investigate mysterious bugs
 /fix → debug and resolve issues
 
 
@@ -137,8 +138,8 @@ Every command works on its own — use what you need, skip what you don't. The m
 # Debug a failing test
 /fix The checkout flow returns 500 when cart is empty
 
-# Research before deciding
-/research How does our app handle file uploads?
+# Investigate mysterious behavior
+/diagnose Users randomly getting logged out on mobile
 
 # Discuss before making decisions
 /discuss Should we use WebSocket or SSE for real-time notifications?
@@ -161,14 +162,13 @@ Claude Prime configures these for your project:
 | **CLAUDE.md** | `CLAUDE.md` | Always | Always-on context — project identity, commands, stack, on-demand reference pointers |
 | **Skills** | `.claude/skills/` | On-demand per task | How to do things — framework patterns, workflow steps, library conventions |
 | **Rules** | `.claude/rules/` | Auto-attached by file path | Guardrails that prevent wrong code — skip these and output breaks |
-| **Agent memory** | `.claude/agent-memory-local/` | Auto-injected per agent | Things you can only learn by doing — failed approaches, environment quirks, hidden gotchas |
 
 ### Skill Types
 
 | Type | What it is | Examples |
 |---|---|---|
-| **Workflow** | Turns multi-step tasks into consistent, repeatable workflows | research, review-code, test, cook, fix, ask, discuss, give-plan, create-doc |
-| **Capability** | Gives the agent new abilities it doesn't have by default | frontend-design, media-processor, docs-seeker, agent-browser |
+| **Workflow** | Turns multi-step tasks into consistent, repeatable workflows | cook, fix, test, review-code, ask, discuss, give-plan, create-doc, diagnose |
+| **Capability** | Gives the agent new abilities it doesn't have by default | frontend-design, media-processor, docs-seeker, agent-browser, skill-creator |
 | **Domain** | Packages specialized knowledge the agent loads on demand | frontend-development, backend-fastapi-python, docker, monorepo |
 
 ### Skills + Worker Agent = Experts
@@ -178,10 +178,6 @@ We deliberately chose **many skills + one worker agent** over multiple specializ
 Why not have a `react-agent`, `python-agent`, `docker-agent`? Because then you (and Claude) have to decide which agent to use — and that decision is often wrong or ambiguous. Instead, the orchestrator selects the right skill and delegates to the built-in general-purpose agent. Skills carry the knowledge, the agent provides the execution. Same worker, different expertise depending on the job.
 
 No custom agent definitions needed — Claude Code's built-in general-purpose agent combined with `_apply-all.md` rules is enough. When a skill needs specialized subagent roles (e.g., a judge, comparator, or grader), it defines them locally in its own `agents/` subdirectory.
-
-### Orchestrator Hooks
-
-Hooks adjust the main agent to work better in the orchestrator role — delegating to sub-agents, activating the right skills, and clarifying requirements before diving in. Sub-agents don't get these; they just execute.
 
 ### Universal Rules (`_apply-all`)
 

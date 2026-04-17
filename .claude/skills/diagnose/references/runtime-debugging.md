@@ -2,15 +2,6 @@
 
 Hypothesis-driven runtime instrumentation for cases where existing evidence is not enough to identify the root cause.
 
-## When to Use
-
-Use this reference only after cheaper evidence sources have come up short.
-
-- Bug requires runtime data: variable states, execution paths, timing
-- Static analysis and existing logs are insufficient to identify root cause
-- Need to verify which code path actually executes at runtime
-- Reproducing the bug produces no useful console/log output
-
 ## Debug Server
 
 Use this server only when you need new runtime evidence and the user has approved starting a local background process.

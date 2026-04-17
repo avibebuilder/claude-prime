@@ -2,10 +2,6 @@
 
 When generating a complete design system recommendation for a project, follow this multi-domain search orchestration.
 
-## When to Use
-
-User asks for a design system, style guide, or comprehensive design recommendation for a project type (e.g., "SaaS dashboard", "e-commerce luxury", "fintech app").
-
 ## Workflow
 
 ### Step 1: Identify Product Category

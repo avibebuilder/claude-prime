@@ -5,7 +5,7 @@ Shared database module for the self-improvement pipeline.
 Provides schema, connection factory, and helper queries used by all three stages.
 Usage as module: from self_improve_db import get_db, get_project_root
 Usage as CLI:   python3 self_improve_db.py resolve list
-                python3 self_improve_db.py resolve <id> approved|rejected
+                python3 self_improve_db.py resolve <id>[,<id>,...] approved|rejected
 """
 
 import json
@@ -115,17 +115,21 @@ def list_pending_proposals(project_root: str) -> None:
         conn.close()
 
 
-def resolve_proposal(project_root: str, proposal_id: int, status: str) -> None:
-    """Mark a proposal as approved or rejected."""
+def resolve_proposal(project_root: str, proposal_ids: list[int], status: str) -> None:
+    """Mark one or more proposals as approved or rejected."""
     conn = get_db(project_root)
     try:
         now = datetime.now(timezone.utc).isoformat()
-        conn.execute(
-            "UPDATE proposals SET status = ?, resolved_at = ? WHERE id = ?",
-            (status, now, proposal_id),
-        )
+        for proposal_id in proposal_ids:
+            conn.execute(
+                "UPDATE proposals SET status = ?, resolved_at = ? WHERE id = ?",
+                (status, now, proposal_id),
+            )
         conn.commit()
-        print(f"Proposal {proposal_id} marked as {status}")
+        if len(proposal_ids) == 1:
+            print(f"Proposal {proposal_ids[0]} marked as {status}")
+        else:
+            print(f"Proposals {','.join(map(str, proposal_ids))} marked as {status}")
 
         # If no more pending proposals, clear announcement and reset dismiss count
         remaining = conn.execute(
@@ -198,16 +202,17 @@ if __name__ == "__main__":
         list_pending_proposals(get_project_root())
     elif len(sys.argv) >= 4 and sys.argv[1] == "resolve":
         try:
-            prop_id = int(sys.argv[2])
+            id_arg = sys.argv[2]
+            prop_ids = [int(x.strip()) for x in id_arg.split(",")]
             new_status = sys.argv[3]
             if new_status not in ("approved", "rejected"):
                 print(f"Invalid status: {new_status}. Use 'approved' or 'rejected'.")
                 sys.exit(1)
-            resolve_proposal(get_project_root(), prop_id, new_status)
+            resolve_proposal(get_project_root(), prop_ids, new_status)
         except ValueError:
-            print(f"Invalid proposal ID: {sys.argv[2]}")
+            print(f"Invalid proposal ID(s): {sys.argv[2]}")
             sys.exit(1)
     else:
         print("Usage: python3 self_improve_db.py resolve list")
-        print("       python3 self_improve_db.py resolve <id> approved|rejected")
+        print("       python3 self_improve_db.py resolve <id>[,<id>,...] approved|rejected")
         sys.exit(1)

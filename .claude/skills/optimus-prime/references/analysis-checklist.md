@@ -1,30 +1,57 @@
 # Project Analysis Checklist
 
-Non-obvious things to look for during codebase analysis. Skip the obvious (stack detection, folder scanning) — Claude already does that well.
+What to inspect before proposing changes. The goal is to understand what makes this project unique — what conventions, patterns, and constraints Claude needs to know to work well here.
 
-## Placement Decision: Rule vs CLAUDE.md vs Docs
+## 1. Existing Claude Config
 
-For each detected convention, apply the **rule test**:
+Check what is already present and whether it looks intentional:
+- `CLAUDE.md`, `CLAUDE.local.md`
+- `.claude/skills/` — existing project skills
+- `.claude/rules/` — path-scoped files besides `_apply-all.md`
+- `.claude/project/` — agent-oriented references
+- `.claude/starter-skills/` — unprocessed reference material
 
-> "If an agent edits a file matching this path without knowing this, will it produce incorrect code?"
+Answer:
+- What should be preserved as intentional project knowledge?
+- What is generic, stale, duplicated, or unfinished?
+- Which files are personal vs team-shared?
 
-| Answer | Where | Example |
-|--------|-------|---------|
-| **Yes** → Guardrail | `.claude/rules/<name>.md` with `paths:` | "Must use `cn()` not `clsx()`", "API responses use `ResponseWrapper`" |
-| **No** → Always-on context | `CLAUDE.md` (brief), `docs/` (human docs), or `.claude/project/` (agent-optimized, optional) — referenced from CLAUDE.md | "Feature-based folder structure", "Auth uses JWT with refresh" |
+## 2. Skill Needs
 
-## Red Flags (likely guardrails)
+Identify what domain knowledge Claude needs for this project:
+- What frameworks, libraries, and tools does the project actually use?
+- Which domains need dedicated skills? (e.g., frontend framework, backend API, deployment)
+- Do any existing skills in `.claude/skills/` already cover these well?
+- Are there starters in `.claude/starter-skills/` that provide useful reference for building skills via `/skill-creator`?
 
-These patterns often trip up agents even with the right skill loaded — strong candidates for rules:
+Focus on what the project needs, not what starters happen to be available.
 
-- "We don't use TypeScript strict mode"
-- "All components are client-side"
-- "We use raw SQL, not ORM"
-- "Custom authentication system"
-- "Monorepo with special conventions"
+## 3. Signals Worth Closer Attention
 
-## Questions Worth Answering
+Conventions agents commonly miss:
+- custom response wrappers, error envelopes, or API shapes
+- non-default utility choices (`cn()` vs `clsx()`, custom fetch client, internal form library)
+- monorepo boundaries or ownership rules
+- unusual test/lint/typecheck commands
+- deployment constraints that influence code shape
+- generated-code boundaries — files that must not be edited directly
 
-1. **What hard constraints exist?** → Things that cause wrong code if missed → `.claude/rules/`
-2. **What always-on context does the agent need?** → `CLAUDE.md`
-3. **What existing docs can agents reference on-demand?** → Point from CLAUDE.md
+These are candidates for placement decisions, not automatic rules.
+
+## 4. Existing Docs Worth Reusing
+
+Prefer pointing to good docs over duplicating them into `CLAUDE.md`:
+- root and package-level READMEs
+- architecture docs, ADRs, runbooks
+- onboarding docs
+- CI config, scripts, or Make targets that reveal canonical commands
+
+## 5. Facts to Verify Before Claiming Them
+
+Do not assert conventions without evidence:
+- package manager and workspace layout
+- frontend/backend boundaries
+- test/lint/typecheck commands actually in use
+- whether TypeScript/ESLint/Biome/Prettier are really present
+- whether "all X lives in Y" is actually true
+- whether a supposed shared utility is the standard path

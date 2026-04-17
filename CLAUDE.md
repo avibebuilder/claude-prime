@@ -94,6 +94,5 @@ On-demand references can live anywhere — just point to them from CLAUDE.md. Us
 |----------|------|
 | `CLAUDE.md` | Team-shared instructions checked into source control — architecture, coding standards, common workflows |
 | `CLAUDE.local.md` | Personal preferences for this project (gitignored) — your role, sandbox URLs, preferred test data, workflow quirks |
-| `.claude/rules/_apply-all.md` | Universal rules for all agents (main + subagents) |
-| `.claude/hooks/orchestrator-directives.py` | Orchestrator-only behavioral rules (main agent only) |
+| `.claude/rules/_apply-all.md` | Universal rules for all agents (main + subagents) — including interaction guardrails |
 

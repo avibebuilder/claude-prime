@@ -99,12 +99,18 @@ Output from the grader agent. Located at `<run-dir>/grading.json`.
       "text": "The spreadsheet has a SUM formula in cell B10",
       "passed": false,
       "evidence": "No spreadsheet was created. The output was a text file."
+    },
+    {
+      "text": "Tells the user what command to run for live verification",
+      "passed": null,
+      "evidence": "Neutral: agent used static analysis to conclusively REFUTE the claim instead — the feature was absent from the code entirely, making live verification unnecessary. Superior outcome."
     }
   ],
   "summary": {
     "passed": 2,
     "failed": 1,
-    "total": 3,
+    "neutral": 1,
+    "total": 4,
     "pass_rate": 0.67
   },
   "execution_metrics": {
@@ -150,8 +156,8 @@ Output from the grader agent. Located at `<run-dir>/grading.json`.
 ```
 
 **Fields:**
-- `expectations[]`: Graded expectations with evidence
-- `summary`: Aggregate pass/fail counts
+- `expectations[]`: Graded expectations with evidence. `passed` is `true` (pass), `false` (fail), or `null` (neutral — agent exceeded the assertion; excluded from pass_rate)
+- `summary`: Aggregate pass/fail/neutral counts. `pass_rate = passed / (passed + failed)`; neutral expectations are excluded
 - `execution_metrics`: Tool usage and output size (from executor's metrics.json)
 - `timing`: Wall clock timing (from timing.json)
 - `claims`: Extracted and verified claims from the output

@@ -35,16 +35,7 @@
     ]
   },
   "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/orchestrator-directives.py"
-          }
-        ]
-      }
-    ],
+    "UserPromptSubmit": [],
     "SessionStart": [
       {
         "matcher": "startup|clear",
