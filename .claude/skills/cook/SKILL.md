@@ -33,9 +33,9 @@ For other commands, run `tasks.py --help`. Each task needs a clear `expected` fi
 
 ### 2. Implement → Verify → Review → Next
 
-Pick the next unblocked task, make the change, then hand verification to `/test`.
+Pick the next unblocked task, make the change, then hand off to a **tester** and (for risky work) a **reviewer** — isolated teammates that judge the change independently. See `.claude/skills/test/teammate.md` and `.claude/skills/review-code/teammate.md` for how to spawn them.
 
-`/cook` owns implementation. `/test` owns verification. Give `/test`:
+`/cook` owns implementation. The tester owns verification. Give the tester:
 - the user-visible claim or acceptance criteria
 - the files or behavior you changed
 - the most likely regression surface
@@ -45,13 +45,13 @@ You can still add durable tests, fixtures, or stable selectors when they belong 
 
 Before invoking verification, confirm the edits actually landed on disk. If the change you expect is missing from the diff, fix that first; a passing check against unchanged code is worthless evidence.
 
-Do not mark a task done on confidence alone. `/test` proves the behavior. `/review-code` checks that the implementation is correct, scoped, and aligned with the repo. For risky or non-trivial work, run `/review-code` before marking the task complete.
+Do not mark a task done on confidence alone. The tester proves the behavior. The reviewer checks that the implementation is correct, scoped, and aligned with the repo. For risky or non-trivial work, spawn a reviewer before marking the task complete.
 
 Update task status as you go so the execution trail stays trustworthy.
 
 ### 3. Review the whole change set
 
-After the task list is complete, review the combined diff before declaring success. Cross-task issues often appear only in the final aggregate: mismatched assumptions, naming drift, incomplete ripple updates, or verification that was too narrow. Use `/review-code` for this final pass.
+After the task list is complete, review the combined diff before declaring success. Cross-task issues often appear only in the final aggregate: mismatched assumptions, naming drift, incomplete ripple updates, or verification that was too narrow. Spawn a reviewer for this final pass.
 
 ### 4. Report
 

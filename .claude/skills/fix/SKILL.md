@@ -42,9 +42,9 @@ After 3 substantive fix attempts that haven't resolved the bug, stop thrashing. 
 
 A repair is only done when the evidence matches the report. Prove three things: (1) the original failure is gone, (2) the repaired path was actually exercised, and (3) nearby behavior did not regress.
 
-Use `/test` as the default verification lane. Give it the original failure, the intended repaired behavior, and the nearby regression ring.
+Hand off to a **tester** — an isolated teammate that verifies the repair independently. See `.claude/skills/test/teammate.md` for how to spawn one.
 
-Add or update a durable test in `/fix` when covering the bug clearly belongs in the codebase. Otherwise hand verification to `/test`.
+Add or update a durable test in `/fix` when covering the bug clearly belongs in the codebase. Otherwise the tester owns verification.
 
 ### 4. Clean up
 
