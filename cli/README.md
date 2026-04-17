@@ -1,8 +1,8 @@
 # claude-prime
 
-**One command to supercharge Claude Code.** Skills, agents, hooks, memory systems — configured and ready to use. No setup headache.
+**Open source Claude Code CLI for developers who want repeatable AI coding workflows without the setup mess.**
 
-Claude Code is powerful, but getting the most out of it requires configuring skills, agents, hooks, rules, and memory systems. Claude Prime does all of that for you in one command — so you can skip the setup and start building.
+Claude Prime installs the missing layer around Claude Code: reusable skills, slash-command workflows, rules, hooks, project context, and interactive setup helpers. It is designed for the real pain points teams hit with AI coding assistants: too much manual setup, repeated prompts, inconsistent output, and poor onboarding across repositories.
 
 ## Install
 
@@ -13,34 +13,42 @@ npx claude-prime install
 Install a specific version:
 
 ```bash
-npx claude-prime install --version 1.1.0
+npx claude-prime install --version 1.2.0
 ```
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `claude-prime install` | Install Claude Prime into the current directory |
-| `claude-prime init` | Configure/reconfigure an existing installation |
+| `claude-prime install` | Download Claude Prime, install it into the current directory, and run initialization |
+| `claude-prime init` | Configure or reconfigure an existing Claude Prime installation |
 
-## How it works
+## What the CLI does
 
 1. Downloads the latest Claude Prime release
-2. Extracts the `.claude/` directory into your project
-3. Runs interactive setup (API keys, MCP servers, gitignore)
-4. Start Claude Code and run `/optimus-prime` to prime your project for your specific stack
+2. Extracts the `.claude/` toolkit into your repository
+3. Runs interactive setup for `.gitignore`, environment files, and optional MCP configuration
+4. Lets you open Claude Code and run `/optimus-prime` to tailor the toolkit to your stack
+
+## Why developers install it
+
+- One-command Claude Code setup
+- Better context engineering for real repositories
+- Reusable workflows instead of repeated prompts
+- More consistent AI coding output across teams
+- Open source customization for your own standards
 
 ## Example workflows
 
 ```bash
-# Jump straight to building
+# Jump straight to implementation
 /cook Add user authentication with Google OAuth
 
 # Debug and fix issues
 /fix The checkout flow returns 500 when cart is empty
 
-# Research before deciding
-/research How does our app handle file uploads?
+# Investigate before changing code
+/diagnose Users randomly getting logged out on mobile
 
 # Plan before implementing
 /give-plan Migrate from REST to GraphQL
@@ -62,7 +70,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/avibebuilder/claude-prime/ma
 ## Links
 
 - [GitHub](https://github.com/avibebuilder/claude-prime)
-- [Full documentation](https://github.com/avibebuilder/claude-prime#readme)
+- [Full README and language versions](https://github.com/avibebuilder/claude-prime#readme)
 
 ## License
 

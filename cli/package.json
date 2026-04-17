@@ -1,7 +1,7 @@
 {
   "name": "claude-prime",
   "version": "1.2.0",
-  "description": "Supercharge Claude Code with skills, commands, and workflows for agent-skill-driven development",
+  "description": "Open source Claude Code toolkit and CLI for repeatable AI coding workflows, context engineering, skills, slash commands, and project setup",
   "bin": {
     "claude-prime": "./bin/cli.js"
   },
@@ -15,7 +15,17 @@
   "keywords": [
     "claude",
     "claude-code",
+    "claude-code-toolkit",
     "ai",
+    "ai-coding",
+    "ai-coding-assistant",
+    "agentic-development",
+    "context-engineering",
+    "developer-tools",
+    "prompt-engineering",
+    "slash-commands",
+    "cli",
+    "open-source",
     "agent",
     "skills",
     "workflows"
