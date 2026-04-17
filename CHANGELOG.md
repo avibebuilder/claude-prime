@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.2
+
+- 🔧 Clarify guidelines for document creation and organization
 ## 1.2.1
 
 - 📝 Update readme
