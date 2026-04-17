@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0
+
+- ✨ Powerful skill-creator replace touch-skill
+- ✨ Optimize skill and add self-improve features
+- ✨ Consolidate rules + new skill-creator port from anthropic skills (will execute longer but provide high quality skill with evals loop)
+- 🔧 Rename debug to diagnose skill to avoid conflict with built-in debug claude session
+- 🔧 Skill enhancements part 1
+- 🔧 Skill enhancements part 2
 ## 1.1.2
 
 - 🐛 Wrong research context and improve clarity in SKILL.md files
