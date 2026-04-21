@@ -11,6 +11,19 @@ TASKS_DIR = os.path.join(os.getcwd(), ".tasks")
 REVIEW_STATUSES = {"pending", "approved", "changes_requested"}
 TASKS_FILE = None
 
+MIN_TITLE_LEN = 12
+MIN_DESC_LEN = 40
+MIN_EXPECTED_LEN = 20
+
+RUBRIC_HINT = """
+Writing a good task — three fields, three jobs:
+  title     Imperative verb + concrete artifact.  e.g. "Add packages/db scaffolding"
+  desc      Body: why, scope (in/out), files, constraints.  Enough for a cold pickup.
+  expected  Observable check: command, file, or behavior.  NOT "matches the plan".
+
+See .claude/scripts/tasks-authoring.md for the full rubric.
+"""
+
 
 def now():
     return time.strftime("%Y%m%d%H%M%S")
@@ -19,6 +32,13 @@ def now():
 def fail(message):
     print(message, file=sys.stderr)
     sys.exit(1)
+
+
+def validate_length(value, min_len, field):
+    trimmed = value.strip() if value else ""
+    if len(trimmed) < min_len:
+        fail(f"{field} too short ({len(trimmed)} chars, need >= {min_len}).\n{RUBRIC_HINT}")
+    return trimmed
 
 
 def normalize_task_file_name(name):
@@ -124,7 +144,7 @@ def next_action(task):
 
 def format_task(task, tasks):
     mark = "x" if task["status"] == "done" else "~" if task["status"] == "in_progress" else " "
-    parts = [f"  [{mark}] #{task['id']}: {task['desc']}"]
+    parts = [f"  [{mark}] #{task['id']}: {task['title']}"]
     if "expected" in task:
         parts.append(f"expect: {task['expected']}")
     if "owner" in task:
@@ -147,16 +167,19 @@ def format_task(task, tasks):
 
 def cmd_add(args):
     tasks = load()
+    title = validate_length(args.title, MIN_TITLE_LEN, "title")
+    desc = validate_length(args.desc, MIN_DESC_LEN, "desc")
+    expected = validate_length(args.expected, MIN_EXPECTED_LEN, "expected")
     blocked_by = parse_blocked_by(args.blocked_by, tasks)
     task_id = max((task["id"] for task in tasks), default=0) + 1
     task = {
         "id": task_id,
-        "desc": args.description,
+        "title": title,
+        "desc": desc,
+        "expected": expected,
         "status": "pending",
         "created": now(),
     }
-    if args.expected:
-        task["expected"] = args.expected
     if blocked_by:
         task["blocked_by"] = blocked_by
     if args.owner:
@@ -175,11 +198,14 @@ def cmd_update(args):
     tasks = load()
     task = require_task(tasks, args.id)
     updated = False
+    if args.title is not None:
+        task["title"] = validate_length(args.title, MIN_TITLE_LEN, "title")
+        updated = True
     if args.desc is not None:
-        task["desc"] = args.desc
+        task["desc"] = validate_length(args.desc, MIN_DESC_LEN, "desc")
         updated = True
     if args.expected is not None:
-        set_optional_field(task, "expected", args.expected)
+        task["expected"] = validate_length(args.expected, MIN_EXPECTED_LEN, "expected")
         updated = True
     if args.owner is not None:
         set_optional_field(task, "owner", args.owner)
@@ -198,7 +224,7 @@ def cmd_update(args):
             task.pop("blocked_by", None)
         updated = True
     if not updated:
-        fail("Nothing to update. Provide one of: --desc, --expected, --blocked-by, --owner, --role, --reviewer")
+        fail("Nothing to update. Provide one of: --title, --desc, --expected, --blocked-by, --owner, --role, --reviewer")
     save(tasks)
     print(f"Updated #{args.id}")
 
@@ -284,8 +310,10 @@ def cmd_show(args):
     if args.json:
         print(json.dumps(task, indent=2))
         return
-    print(f"#{task['id']}: {task['desc']}")
+    print(f"#{task['id']}: {task['title']}")
     print(f"status: {task['status']}")
+    if "desc" in task:
+        print(f"desc: {task['desc']}")
     if "expected" in task:
         print(f"expected: {task['expected']}")
     if "owner" in task:
@@ -325,15 +353,36 @@ def build_parser():
         description="Lightweight task tracker for AI agent workflows.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
+Writing a good task
+-------------------
+Three fields, three jobs:
+  title     Imperative verb + concrete artifact.  >=12 chars.
+  desc      Body: why, scope (in/out), files, constraints.  >=40 chars.
+  expected  Observable check: command, file, or behavior.  >=20 chars.
+
+Good:
+  title     "Add packages/db scaffolding"
+  desc      "Create packages/db with workspace deps on env/contracts. Out of scope:
+             schema and migrations (task #7). Must import env from @workspace/env,
+             never process.env."
+  expected  "pnpm -F db typecheck passes; packages/db/src/index.ts exports db"
+
+Bad:
+  title     "Scaffold shared packages"       <- umbrella, no artifact
+  desc      "scaffold the packages"          <- no context for cold pickup
+  expected  "minimal valid manifests"        <- unverifiable
+
+See .claude/scripts/tasks-authoring.md for the full rubric.
+
 Examples:
-  # Add a task with an expected outcome
-  %(prog)s add "Implement login page" "Login form renders and submits correctly"
+  # Add a task (title, desc, expected all required)
+  %(prog)s add "<title>" "<desc>" "<expected>"
 
   # Add a task blocked by others
-  %(prog)s add "Deploy to prod" --blocked-by 1,2
+  %(prog)s add "<title>" "<desc>" "<expected>" --blocked-by 1,2
 
-  # Assign a task to an owner
-  %(prog)s assign 1 alice --role developer
+  # Update a field
+  %(prog)s update 1 --desc "<new body>"
 
   # Verify completion and approve
   %(prog)s verify 1 "All tests pass, manually verified on staging"
@@ -357,9 +406,14 @@ Examples:
     subparsers.required = True
 
     # add
-    p_add = subparsers.add_parser("add", help="create a new task")
-    p_add.add_argument("description", help="task description")
-    p_add.add_argument("expected", nargs="?", default=None, help="expected outcome")
+    p_add = subparsers.add_parser(
+        "add",
+        help="create a new task",
+        description="Create a new task. See the top-level --help for the authoring rubric.",
+    )
+    p_add.add_argument("title", help="imperative verb + concrete artifact (>=12 chars)")
+    p_add.add_argument("desc", help="body: why, scope, files, constraints (>=40 chars)")
+    p_add.add_argument("expected", help="observable check: command, file, or behavior (>=20 chars)")
     p_add.add_argument("--blocked-by", metavar="IDS", help="comma-separated task IDs this task is blocked by")
     p_add.add_argument("--owner", metavar="NAME", help="task owner")
     p_add.add_argument("--role", metavar="ROLE", help="owner role")
@@ -369,8 +423,9 @@ Examples:
     # update
     p_update = subparsers.add_parser("update", help="update fields on an existing task")
     p_update.add_argument("id", type=int, metavar="ID", help="task ID")
-    p_update.add_argument("--desc", metavar="TEXT", help="new description")
-    p_update.add_argument("--expected", metavar="TEXT", help='new expected outcome (use "none" to clear)')
+    p_update.add_argument("--title", metavar="TEXT", help="new title (>=12 chars)")
+    p_update.add_argument("--desc", metavar="TEXT", help="new body (>=40 chars)")
+    p_update.add_argument("--expected", metavar="TEXT", help="new expected outcome (>=20 chars)")
     p_update.add_argument("--blocked-by", metavar="IDS", help='comma-separated task IDs (empty string to clear)')
     p_update.add_argument("--owner", metavar="NAME", help='owner (use "none" to clear)')
     p_update.add_argument("--role", metavar="ROLE", help='role (use "none" to clear)')
