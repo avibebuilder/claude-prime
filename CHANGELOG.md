@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.3
+
+- 🔧 Enhance task manager
 ## 1.2.2
 
 - 🔧 Clarify guidelines for document creation and organization
