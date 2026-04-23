@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.4
+
+- 🐛 Anchor script paths to project root
 ## 1.2.3
 
 - 🔧 Enhance task manager
