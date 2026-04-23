@@ -7,7 +7,7 @@ When generating a complete design system recommendation for a project, follow th
 ### Step 1: Identify Product Category
 
 ```bash
-python3 scripts/search.py "user query" --domain products --top 1 --json
+python3 .claude/skills/frontend-design/scripts/search.py "user query" --domain products --top 1 --json
 ```
 
 Extract `Product Type` from the result — this is the category (e.g., "SaaS", "E-Commerce", "FinTech").
@@ -15,7 +15,7 @@ Extract `Product Type` from the result — this is the category (e.g., "SaaS", "
 ### Step 2: Get Reasoning Rules
 
 ```bash
-python3 scripts/search.py "category from step 1" --domain ui-reasoning --top 1 --json
+python3 .claude/skills/frontend-design/scripts/search.py "category from step 1" --domain ui-reasoning --top 1 --json
 ```
 
 Extract from the result:
@@ -33,16 +33,16 @@ Use the style priority from Step 2 to weight the style search.
 
 ```bash
 # Style — weighted by reasoning's Style_Priority
-python3 scripts/search.py "user query + style priority keywords" --domain styles --top 3 --json
+python3 .claude/skills/frontend-design/scripts/search.py "user query + style priority keywords" --domain styles --top 3 --json
 
 # Colors — match product type
-python3 scripts/search.py "user query" --domain colors --top 2 --json
+python3 .claude/skills/frontend-design/scripts/search.py "user query" --domain colors --top 2 --json
 
 # Landing patterns
-python3 scripts/search.py "user query" --domain landing --top 2 --json
+python3 .claude/skills/frontend-design/scripts/search.py "user query" --domain landing --top 2 --json
 
 # Typography
-python3 scripts/search.py "user query" --domain typography --top 2 --json
+python3 .claude/skills/frontend-design/scripts/search.py "user query" --domain typography --top 2 --json
 ```
 
 ### Step 4: Aggregate Best Matches
