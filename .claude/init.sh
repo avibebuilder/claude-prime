@@ -47,6 +47,7 @@ GITIGNORE_ENTRIES=(
     "claude-prime-*.zip",
     ".mcp.json"
     "CLAUDE.local.md"
+    ".tasks/"
 )
 
 if [ -f "$GITIGNORE_FILE" ]; then

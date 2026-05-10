@@ -27,6 +27,7 @@ const GITIGNORE_ENTRIES = [
   "claude-prime-*.zip",
   ".mcp.json",
   "CLAUDE.local.md",
+  ".tasks/",
 ];
 
 function handleCancel(value) {
