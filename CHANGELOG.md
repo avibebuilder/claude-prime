@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.5
+
+- 🔧 Remove allow-claude-dir hooks as claude-code already fixed it
+- 🔧 Add .tasks/ to gitignore entries
 ## 1.2.4
 
 - 🐛 Anchor script paths to project root

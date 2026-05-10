@@ -1,6 +1,6 @@
 {
   "name": "claude-prime",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Open source Claude Code toolkit and CLI for repeatable AI coding workflows, context engineering, skills, slash commands, and project setup",
   "bin": {
     "claude-prime": "./bin/cli.js"
