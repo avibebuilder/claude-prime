@@ -21,3 +21,5 @@ tmp/
 # local data
 local-data/
 skills/.eval-backup/
+
+__pycache__/
