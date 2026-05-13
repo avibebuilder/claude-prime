@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.6
+
+- 🐛 Ignore pycache in self-improve hook
 ## 1.2.5
 
 - 🔧 Remove allow-claude-dir hooks as claude-code already fixed it
