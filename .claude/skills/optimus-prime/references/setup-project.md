@@ -1,6 +1,6 @@
 # Full Project Setup Workflow
 
-Default workflow for both fresh prime and re-prime. SKILL.md has the mode split, principles, and decision matrix; this file is the step-by-step.
+Default workflow for both fresh prime and re-prime. SKILL.md has the mode split, principles, and Placement Decision Matrix; this file is the step-by-step. Steps 3–5 are the matrix applied in order.
 
 ## Step 1: Analyze the Repo and Existing Config
 
@@ -18,6 +18,8 @@ Use [analysis-checklist.md](../references/analysis-checklist.md) for non-obvious
 ## Step 2: Present the Discussion Summary
 
 Before changing meaningful files, report back using the Output Format from SKILL.md (Current State / Proposed Changes / Files to Touch, plus Decisions and Risks when non-empty).
+
+**Apply the Placement Decision Matrix here.** For every detected need from Step 1, name the layer it belongs in and the test that put it there. If a need fails every test, it does not get added — generic boilerplate degrades context quality.
 
 Analysis is safe to run immediately. Overwrites, deletions, or wholesale regeneration require user confirmation.
 
@@ -40,6 +42,8 @@ Starters are reference material that accelerate skill-creator — they are not s
 
 Rules are optional. Zero rules is a valid outcome.
 
+A rule is a **correctness guardrail**, not a knowledge file. Path scoping is its delivery mechanism — it only fires when an edited file matches `paths:`. If something has no natural path scope, or a skill could teach it, it is not a rule.
+
 Rule test:
 > With the relevant skill activated, will code still be wrong without this information?
 
@@ -57,21 +61,21 @@ Do not modify `_apply-all.md`. It is a universal boilerplate rule from prime, no
 
 ## Step 5: Generate or Refine CLAUDE.md
 
-CLAUDE.md is always-on context — every token competes for attention. Keep it lean and high-signal.
+CLAUDE.md is the **always-on entry point** — project identity, commands, stack, key architecture, and pointers to on-demand references. Keep it lean; detail belongs in docs, skills, or on-demand references.
 
 Priorities:
 - identity, commands, stack summary — concise
 - key architecture decisions that affect most tasks
 - pointers to existing docs, READMEs, and on-demand references
 - do not duplicate what skills already teach
-- do not mention rules (they auto-attach)
+- do not mention rules or skills here (they auto-attach by path)
 - prefer refining a good existing CLAUDE.md over regenerating it
 
 If existing docs are too verbose for agents, an optional `.claude/project/` reference layer can hold dense, agent-oriented references.
 
 ## Step 6: Offer CLAUDE.local.md Setup
 
-Ask whether the user wants personal, gitignored preferences — role, sandbox URLs, preferred test data, workflow quirks. If yes, create or refine `CLAUDE.local.md` and ensure `.gitignore` covers it.
+Ask whether the user wants to have personal, gitignored preferences — role, sandbox URLs, preferred test data, workflow quirks. If yes, create or refine `CLAUDE.local.md` and ensure `.gitignore` covers it.
 
 ## Step 7: Domain Documentation (only if it adds value)
 
@@ -109,14 +113,22 @@ For ongoing config health checks, recommend `/self-evolve`.
 
 ## Step 10: Offer Skill Optimization
 
-Everything is set up and working. Now offer the user two optimization paths for the skills that were created:
+Everything is set up and working. Now offer optimization for the new skills that were created. **Always emphasize upfront that full optimization takes meaningful time and tokens** — the user should make an informed call.
+
+The two optimization modes:
 
 | Option | What it does | Pros | Cons |
 |---|---|---|---|
 | **Description optimization only** | Optimizes skill descriptions for highest invocation accuracy | Fast, low cost | Skills may have weak instructions that only surface during real use |
-| **Full optimization (Recommended)** | Runs evals loop + self-improve iterations + description optimization | Skills are battle-tested before the user depends on them. Catches instruction gaps, wrong behaviors, and weak triggers early | Takes more time and tokens |
+| **Full optimization** | Runs evals loop + self-improve iterations + description optimization | Skills are battle-tested before the user depends on them. Catches instruction gaps, wrong behaviors, and weak triggers early | Takes meaningful time and tokens |
 
-**Recommend full optimization.** Skills the user will rely on daily deserve the investment — finding problems now is cheaper than hitting them mid-task later. Let the user choose either option or skip entirely.
+Recommend based on the number of new skills created:
+
+- **≤3 new skills** — recommend **full optimization for all** of them. The volume is small enough that the time/token cost is acceptable for skills the user will rely on daily.
+- **>3 new skills** — recommend a **split strategy**: full optimization for **core skills only** + description optimization for the rest. Full-optimizing every skill at this volume is too slow and too expensive.
+  - **Propose which skills are core, with reasoning** — use what you know about the project (stack, primary workflows, which skills will fire most often, which carry the highest blast radius if they misbehave) to nominate 2–3 core skills. Show your picks with one-line justification for each, then let the user confirm or swap. Do not dump the full list and ask "which are core?" — that pushes the thinking onto the user.
+
+In all cases, let the user override the recommendation or skip optimization entirely.
 
 ## Output Summary
 
