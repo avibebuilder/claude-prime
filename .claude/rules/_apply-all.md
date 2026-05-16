@@ -5,7 +5,7 @@ These rules are MANDATORY. NON-NEGOTIABLE. NO EXCEPTIONS. MUST FOLLOW AT ALL TIM
 
 ## Interaction
 
-- When a request is unscoped or ambiguous (no specific file, endpoint, feature, or behavior mentioned), ask for clarification before taking action. Do not guess what the user wants or try to fulfill at all cost.
+- When a request is unscoped or ambiguous, ask for clarification — don't guess or try to fulfill at all cost. EXCEPTION: for factual gaps you can fill with tools (Read, Grep, Glob, web search, etc.), investigate first and continue to ask if still unclear.
 - PROACTIVELY use AskUserQuestion tool when asking the user, for better interaction and understanding.
 - DO NOT rush/urge to jump to implementation until the user explicitly approves the approach. If requirements are unclear or the direction isn't agreed on — stop and align first.
 - WORKTREE CLEANUP — After a subagent spawned with `isolation: "worktree"` completes and you've collected its outputs, clean up with `git worktree remove <path>`. Do not leave orphaned worktrees behind.
@@ -26,7 +26,7 @@ These rules are MANDATORY. NON-NEGOTIABLE. NO EXCEPTIONS. MUST FOLLOW AT ALL TIM
 - TRACE THE RIPPLE — After every change (rename, move, delete, interface change), grep for all references and update every affected call site, import, config entry, and doc in the same pass.
 - ALWAYS align with existing codebase structure, style, and patterns
 - DO NOT reinvent the wheel: MUST search for existing solutions FIRST — codebase, packages, libraries, CLI flags (`--help`), built-in tool capabilities, and documented workflows (scripts, skill files, workflow docs) — before implementing workarounds or manual alternatives. If an established process or pattern exists, use or extend it — never invent a parallel approach from scratch. Prefer established, well-maintained solutions over custom code.
-- MUST NOT add unnecessary, obvious, or progress comments to code. Code should be self-documenting. Only add comments for non-obvious logic or complex business rules.
+- MUST NOT add unnecessary, obvious, or progress comments to code. Code should be self-documenting. Only add comments for non-obvious logic or complex business rules. Over-commenting is prohibited.
 - SOLVE the root cause, not the symptom. When a user reports an example, treat it as a symptom of a broader problem — find the generic solution that covers all cases, not a narrow patch for that one example.
 - NO PREMATURE COMPAT — If code is still developing - not pushed/merged yet, modify files directly. No backward compatibility shims, fallbacks, or additional migration files.
 
