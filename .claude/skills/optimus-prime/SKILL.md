@@ -28,7 +28,7 @@ Default to re-prime whenever meaningful existing config is found. Never overwrit
 6. **Offer CLAUDE.local.md** — personal preferences (role, sandbox URLs, preferred test data, workflow quirks), gitignored.
 7. **Clean up** — delete `.claude/starter-skills/` after processing. Keep protected skills. Confirm all deletions.
 8. **Verify** — references resolve, stack claims match evidence, config is project-specific not generic.
-9. **Offer skill optimization** — after everything is set up, offer optimization paths sized to how many new skills were created. ≤3 skills: recommend full optimization for all. >3 skills: recommend full optimization for user-designated core skills only + description optimization for the rest (avoids long execution time and token burn). Always emphasize that full optimization takes meaningful time and tokens.
+9. **Offer skill optimization** — after everything is set up, offer optimization paths sized to how many new skills were created. ≤3 skills: recommend full optimization for all. >3 skills: recommend full optimization for user-designated core skills only + description optimization for the rest (avoids long execution time and token burn). Always emphasize that full optimization takes meaningful time and tokens. **Run sequentially — never in parallel; concurrent runs overload the user's machine.**
 
 Follow full step-by-step in [setup-project.md](./references/setup-project.md).
 

@@ -115,6 +115,8 @@ For ongoing config health checks, recommend `/self-evolve`.
 
 Everything is set up and working. Now offer optimization for the new skills that were created. **Always emphasize upfront that full optimization takes meaningful time and tokens** — the user should make an informed call.
 
+**Run sequentially — never in parallel.** `/skill-creator` runs are CPU/memory-heavy and lag the user's machine when concurrent. Applies to both full and description-only modes — finish one before starting the next.
+
 The two optimization modes:
 
 | Option | What it does | Pros | Cons |
