@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.8
+
+- 🔧 Stop ask-rule from blocking on facts Claude can look up itself
+- 🔧 Rebalance discuss skill so pushback is contextual, not default
 ## 1.2.7
 
 - ✨ Add humanizer starter skill
