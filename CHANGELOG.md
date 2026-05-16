@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.7
+
+- ✨ Add humanizer starter skill
+- 🔧 Note skill description char limits (soft ~650, hard 1024) in skill-creator
+- 🔧 Sharpen optimus-prime skill scoping and placement guidance
 ## 1.2.6
 
 - 🐛 Ignore pycache in self-improve hook
