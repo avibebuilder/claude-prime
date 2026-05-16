@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.9
+
+- 🔧 Enforce sequential skill optimization and tighten description char hint
 ## 1.2.8
 
 - 🔧 Stop ask-rule from blocking on facts Claude can look up itself
